@@ -1,5 +1,6 @@
 package com.edocent.movieapp;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -43,10 +44,10 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-
         moviesListView = (ListView)view.findViewById(R.id.moviesListViewId);
         /*Get Movies List*/
-
+        MovieService service = new MovieService();
+        service.execute(AppConstants.POPULARITY);
         /*Ends*/
 
         return view;
@@ -57,7 +58,7 @@ public class MainActivityFragment extends Fragment {
     public class MovieService extends AsyncTask<String, Void, String>{
         @Override
         protected String doInBackground(String... params) {
-            return getMovieJSONString();
+            return getMovieJSONString(params[0]);
         }
 
         @Override
@@ -94,14 +95,22 @@ public class MainActivityFragment extends Fragment {
     Get data from the service
     This code has been borrowed from https://gist.github.com/udacityandroid/d6a7bb21904046a91695
     * */
-    public String getMovieJSONString(){
+    public String getMovieJSONString(String sortBy){
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         String movieJsonStr = null;
 
         try {
-            URL url = new URL(AppConstants.POPULAR_MOVIES_URL);
+            //URL url = new URL(AppConstants.POPULAR_MOVIES_URL);
+            //sort_by=popularity.desc&api_key="+MOVIE_API_KEY
+            Uri uri= Uri.parse(AppConstants.BASE_URL).buildUpon()
+                    .appendQueryParameter(AppConstants.SORT_BY, sortBy)
+                    .appendQueryParameter(AppConstants.API_KEY, AppConstants.MOVIE_API_KEY)
+                    .build();
+
+            Log.v(TAG, "URI - "+uri.toString());
+            URL url = new URL(uri.toString());
 
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
