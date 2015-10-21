@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.edocent.movieapp.adapters.MovieAdapter;
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.utilities.AppConstants;
 
@@ -31,7 +34,7 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
 
     ListView moviesListView;
     static String TAG = "MainActivityFragment";
@@ -45,12 +48,35 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         moviesListView = (ListView)view.findViewById(R.id.moviesListViewId);
+        moviesListView.setOnItemClickListener(this);
+        moviesListView.setOnScrollListener(this);
+
         /*Get Movies List*/
         MovieService service = new MovieService();
         service.execute(AppConstants.POPULARITY);
         /*Ends*/
+        
+        /*Call Adapter*/
+        MovieAdapter adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
+        moviesListView.setAdapter(adapter);
+        /*Ends*/
 
         return view;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
     }
 
 
