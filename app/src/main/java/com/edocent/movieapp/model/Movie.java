@@ -1,9 +1,11 @@
 package com.edocent.movieapp.model;
 
+import java.io.Serializable;
+
 /**
  * Created by SRIVASTAVAA on 10/20/2015.
  */
-public class Movie {
+public class Movie implements Serializable{
 
     long movieId;
     String title;
@@ -11,6 +13,8 @@ public class Movie {
     String releaseDate;
     String posterPath;
     String voteCount;
+    String movieLength;
+    String voteAverage;
 
     public long getMovieId() {
         return movieId;
@@ -58,5 +62,21 @@ public class Movie {
 
     public void setVoteCount(String voteCount) {
         this.voteCount = voteCount;
+    }
+
+    public String getMovieLength() {
+        return movieLength;
+    }
+
+    public void setMovieLength(String movieLength) {
+        this.movieLength = movieLength;
+    }
+
+    public String getVoteAverage() {
+        return voteAverage;
+    }
+
+    public void setVoteAverage(String voteAverage) {
+        this.voteAverage = voteAverage;
     }
 }

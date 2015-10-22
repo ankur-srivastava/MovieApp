@@ -1,5 +1,6 @@
 package com.edocent.movieapp;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.edocent.movieapp.adapters.MovieAdapter;
 import com.edocent.movieapp.model.Movie;
@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +60,15 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Movie detailMovieObj = null;
+        if(moviesListFromJSON != null && moviesListFromJSON.get(position) != null){
+            detailMovieObj = moviesListFromJSON.get(position);
+        }
 
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra(AppConstants.DETAIL_MOVIE_OBJECT, detailMovieObj);
+
+        startActivity(intent);
     }
 
     @Override
@@ -212,13 +218,24 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         Movie tempMovie = new Movie();
         try {
             tempMovie.setTitle(tempObject.getString("title"));
-            tempMovie.setReleaseDate(tempObject.getString("release_date"));
+            if(tempObject.getString("release_date") != null && !tempObject.getString("release_date").equals("")){
+                tempMovie.setReleaseDate(getYear(tempObject.getString("release_date")));
+            }
             tempMovie.setPosterPath(tempObject.getString("poster_path"));
             tempMovie.setOverview(tempObject.getString("overview"));
+            tempMovie.setMovieLength(tempObject.getString("overview"));
+            tempMovie.setVoteCount(tempObject.getString("vote_count"));
+            tempMovie.setVoteAverage(tempObject.getString("vote_average")+"/10");
 
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return tempMovie;
+    }
+
+    public String getYear(String date){
+        String year = "";
+        year = date.substring(0, date.indexOf("-"));
+        return year;
     }
 }
