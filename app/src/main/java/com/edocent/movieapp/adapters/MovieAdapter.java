@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.edocent.movieapp.R;
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.utilities.AppConstants;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -41,17 +42,17 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
         convertView = inflater.inflate(resource, viewGroup, false);
 
-        TextView titleText = (TextView) convertView.findViewById(R.id.movieTitleId);
-        titleText.setText(movie.getTitle());
+        //TextView titleText = (TextView) convertView.findViewById(R.id.movieTitleId);
+        //titleText.setText(movie.getTitle());
 
         //Sizes - 75, 150, 300, 500
         //Image URL - http://image.tmdb.org/t/p/w75/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg
         // "w92", "w154", "w185", "w342", "w500", "w780", or "original" - w185 is recommended
         ImageView movieIcon = (ImageView) convertView.findViewById(R.id.movieIconId);
         String imageURL = AppConstants.MOVIE_URL+movie.getPosterPath();
-        Log.v(TAG, "Image URL "+imageURL);
+        //Log.v(TAG, "Image URL "+imageURL);
         //add this compile 'com.squareup.picasso:picasso:2.5.2'
-        //Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
+        Picasso.with(getContext()).load(imageURL).into(movieIcon);
         return convertView;
     }
 }

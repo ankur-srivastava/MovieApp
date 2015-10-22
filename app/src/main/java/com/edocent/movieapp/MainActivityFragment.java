@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import com.edocent.movieapp.adapters.MovieAdapter;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public class MainActivityFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
 
-    ListView moviesListView;
+    GridView moviesListView;
     static String TAG = "MainActivityFragment";
     List<Movie> moviesListFromJSON;
 
@@ -47,18 +48,13 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        moviesListView = (ListView)view.findViewById(R.id.moviesListViewId);
+        moviesListView = (GridView)view.findViewById(R.id.moviesListViewId);
         moviesListView.setOnItemClickListener(this);
         moviesListView.setOnScrollListener(this);
 
         /*Get Movies List*/
         MovieService service = new MovieService();
         service.execute(AppConstants.POPULARITY);
-        /*Ends*/
-        
-        /*Call Adapter*/
-        MovieAdapter adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
-        moviesListView.setAdapter(adapter);
         /*Ends*/
 
         return view;
@@ -84,6 +80,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public class MovieService extends AsyncTask<String, Void, String>{
         @Override
         protected String doInBackground(String... params) {
+            Log.v(TAG, "In doInBackground with param "+params[0]);
             return getMovieJSONString(params[0]);
         }
 
@@ -92,6 +89,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             /*Populate the Movie object with the data from the service call*/
             JSONObject jsonObject = null;
             JSONArray jsonArray = null;
+            Log.v(TAG, "Got the following result "+result);
             try {
                 jsonObject = new JSONObject(result);
                 if(jsonObject != null){
@@ -113,6 +111,12 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                     }
 
                 }
+            }
+            if(moviesListFromJSON != null) {
+                Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
+                /*Call Adapter*/
+                MovieAdapter adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
+                moviesListView.setAdapter(adapter);
             }
         }
     }
