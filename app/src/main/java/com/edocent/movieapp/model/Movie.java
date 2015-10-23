@@ -1,11 +1,14 @@
 package com.edocent.movieapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by SRIVASTAVAA on 10/20/2015.
  */
-public class Movie implements Serializable{
+public class Movie implements Parcelable{
 
     long movieId;
     String title;
@@ -15,6 +18,47 @@ public class Movie implements Serializable{
     String voteCount;
     String movieLength;
     String voteAverage;
+
+    public Movie() {
+    }
+
+    public Movie(Parcel in) {
+        setMovieId(in.readLong());
+        setTitle(in.readString());
+        setOverview(in.readString());
+        setReleaseDate(in.readString());
+        setPosterPath(in.readString());
+        setVoteCount(in.readString());
+        setMovieLength(in.readString());
+        setVoteAverage(in.readString());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(getMovieId());
+        dest.writeString(getTitle());
+        dest.writeString(getOverview());
+        dest.writeString(getReleaseDate());
+        dest.writeString(getPosterPath());
+        dest.writeString(getVoteCount());
+        dest.writeString(getMovieLength());
+        dest.writeString(getVoteAverage());
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public long getMovieId() {
         return movieId;

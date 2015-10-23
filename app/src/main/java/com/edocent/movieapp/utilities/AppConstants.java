@@ -15,4 +15,5 @@ public class AppConstants {
     public static final String MOVIE_URL="http://image.tmdb.org/t/p/w342";
     public static final String MOVIE_DETAIL_URL="http://image.tmdb.org/t/p/w780";
     public static final String DETAIL_MOVIE_OBJECT="movie_detail";
+    public static final String MOVIE_LIST_FROM_BUNDLE_KEY="movie_list_from_bundle_key";
 }

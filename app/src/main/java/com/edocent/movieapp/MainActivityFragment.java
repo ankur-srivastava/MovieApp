@@ -40,7 +40,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     GridView moviesListView;
     static String TAG = "MainActivityFragment";
-    List<Movie> moviesListFromJSON;
+    ArrayList<Movie> moviesListFromJSON;
 
     public MainActivityFragment() {
     }
@@ -61,11 +61,19 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
         Log.v(TAG, "Shared Pref value is " + sortOrderPref);
 
-        if(sortOrderPref) {
-            service.execute(AppConstants.RATING);
+        if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
+            if(sortOrderPref) {
+                service.execute(AppConstants.RATING);
+            }else{
+                service.execute(AppConstants.POPULARITY);
+            }
         }else{
-            service.execute(AppConstants.POPULARITY);
+            Log.v(TAG, "Get the list from Bundle");
+            moviesListFromJSON = savedInstanceState.getParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY);
+            Log.v(TAG, "Got the list, now set the adapter");
+            setAdapter();
         }
+
         /*Ends*/
 
         return view;
@@ -134,9 +142,23 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             if(moviesListFromJSON != null) {
                 Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
                 /*Call Adapter*/
-                MovieAdapter adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
-                moviesListView.setAdapter(adapter);
+                setAdapter();
             }
+        }
+    }
+
+    public void setAdapter(){
+        MovieAdapter adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
+        moviesListView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle){
+        super.onSaveInstanceState(bundle);
+        Log.v(TAG, "Device orientation changed");
+        if(moviesListFromJSON != null){
+            bundle.putParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY, moviesListFromJSON);
+            Log.v(TAG, "List saved in Bundle");
         }
     }
 
