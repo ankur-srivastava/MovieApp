@@ -1,5 +1,6 @@
 package com.edocent.movieapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,6 +45,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     MovieAdapter adapter;
 
     int pageNo = 1;
+    int tempFirstVisibleItem;
     boolean refreshEnabled = true;
 
     public MainActivityFragment() {
@@ -59,7 +61,9 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         moviesListView.setOnScrollListener(this);
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
-            getMovieList();
+            if(refreshEnabled){
+                getMovieList();
+            }
         }else{
             //Log.v(TAG, "Get the list from Bundle");
             moviesListFromJSON = savedInstanceState.getParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY);
@@ -75,7 +79,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onStart(){
         super.onStart();
-        getMovieList();
+        //getMovieList();
     }
 
     public boolean getSortOrderPref(){
@@ -115,10 +119,11 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        Log.v(TAG, "First visible " + firstVisibleItem);
         //If the visible item is about to become equal to the count then refresh
         //To refresh the list fetch is called with new page no -> progress bar started -> adapter notifies data change
-        if(refreshEnabled && (firstVisibleItem == (totalItemCount-4))){
+        if(refreshEnabled && (tempFirstVisibleItem != firstVisibleItem) && ((totalItemCount - firstVisibleItem) <= 12)){
+            //Log.v(TAG, "First visible " + firstVisibleItem+"totalItemCount is "+totalItemCount);
+            tempFirstVisibleItem = firstVisibleItem;
             getMovieList();
         }
     }
@@ -126,6 +131,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     /*Add an Async Task class*/
     public class MovieService extends AsyncTask<String, Void, String>{
+
+        private ProgressDialog dialog =
+                new ProgressDialog(getActivity());
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            dialog.setMessage("We are almost done !!");
+            dialog.show();
+        }
+
         @Override
         protected String doInBackground(String... params) {
             refreshEnabled = false;
@@ -167,8 +183,9 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 setAdapter();
                 /*increment page count*/
                 pageNo++;
-                Log.v(TAG, "Page Count is "+pageNo);
+                Log.v(TAG, "Page Count is " + pageNo);
             }
+            dialog.dismiss();
             refreshEnabled = true;
         }
     }
@@ -178,6 +195,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
             moviesListView.setAdapter(adapter);
         }else{
+            adapter.addAll(moviesListFromJSON);
             adapter.notifyDataSetChanged();
         }
     }
