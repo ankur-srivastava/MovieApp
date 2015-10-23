@@ -41,8 +41,13 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     GridView moviesListView;
     static String TAG = "MainActivityFragment";
     ArrayList<Movie> moviesListFromJSON;
+    MovieAdapter adapter;
+
+    int pageNo = 1;
+    boolean refreshEnabled = true;
 
     public MainActivityFragment() {
+
     }
 
     @Override
@@ -81,11 +86,13 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     public void getMovieList(){
         MovieService service = new MovieService();
+        //Start progress bar
         if(getSortOrderPref()) {
             service.execute(AppConstants.RATING);
         }else{
             service.execute(AppConstants.POPULARITY);
         }
+        //Stop progress bar
     }
 
     @Override
@@ -108,7 +115,12 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+        Log.v(TAG, "First visible " + firstVisibleItem);
+        //If the visible item is about to become equal to the count then refresh
+        //To refresh the list fetch is called with new page no -> progress bar started -> adapter notifies data change
+        if(refreshEnabled && (firstVisibleItem == (totalItemCount-4))){
+            getMovieList();
+        }
     }
 
 
@@ -116,6 +128,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public class MovieService extends AsyncTask<String, Void, String>{
         @Override
         protected String doInBackground(String... params) {
+            refreshEnabled = false;
             Log.v(TAG, "In doInBackground with param "+params[0]);
             return getMovieJSONString(params[0]);
         }
@@ -152,13 +165,21 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
                 /*Call Adapter*/
                 setAdapter();
+                /*increment page count*/
+                pageNo++;
+                Log.v(TAG, "Page Count is "+pageNo);
             }
+            refreshEnabled = true;
         }
     }
 
     public void setAdapter(){
-        MovieAdapter adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
-        moviesListView.setAdapter(adapter);
+        if(adapter == null) {
+            adapter = new MovieAdapter(getActivity(), R.layout.list_item_movie, moviesListFromJSON);
+            moviesListView.setAdapter(adapter);
+        }else{
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -185,6 +206,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             //URL url = new URL(AppConstants.POPULAR_MOVIES_URL);
             //sort_by=popularity.desc&api_key="+MOVIE_API_KEY
             Uri uri= Uri.parse(AppConstants.BASE_URL).buildUpon()
+                    .appendQueryParameter(AppConstants.PAGE_NO, String.valueOf(pageNo))
                     .appendQueryParameter(AppConstants.SORT_BY, sortBy)
                     .appendQueryParameter(AppConstants.API_KEY, AppConstants.MOVIE_API_KEY)
                     .build();
