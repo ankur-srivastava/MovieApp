@@ -1,8 +1,11 @@
 package com.edocent.movieapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,7 +55,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
         /*Get Movies List*/
         MovieService service = new MovieService();
-        service.execute(AppConstants.POPULARITY);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean sortOrderPref = sharedPreferences.getBoolean(getString(R.string.pref_rating_sort), false);
+
+        Log.v(TAG, "Shared Pref value is " + sortOrderPref);
+
+        if(sortOrderPref) {
+            service.execute(AppConstants.RATING);
+        }else{
+            service.execute(AppConstants.POPULARITY);
+        }
         /*Ends*/
 
         return view;
@@ -235,7 +248,11 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     public String getYear(String date){
         String year = "";
-        year = date.substring(0, date.indexOf("-"));
+        if(date != null && date.length() > 0 && date.indexOf("-") > 0) {
+            year = date.substring(0, date.indexOf("-"));
+        }else{
+            year = date;
+        }
         return year;
     }
 }

@@ -10,6 +10,7 @@ public class AppConstants {
     public static final String SORT_BY="sort_by";
     public static final String API_KEY="api_key";
     public static final String POPULARITY = "popularity.desc";
+    public static final String RATING = "vote_average.desc";
     public static final String POPULAR_MOVIES_URL = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="+MOVIE_API_KEY;
     public static final String MOVIE_URL="http://image.tmdb.org/t/p/w342";
     public static final String MOVIE_DETAIL_URL="http://image.tmdb.org/t/p/w780";
