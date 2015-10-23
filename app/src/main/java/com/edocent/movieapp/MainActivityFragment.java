@@ -42,6 +42,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     GridView moviesListView;
     static String TAG = "MainActivityFragment";
     ArrayList<Movie> moviesListFromJSON;
+    ArrayList<Movie> allMoviesList;
     MovieAdapter adapter;
 
     int pageNo = 1;
@@ -67,6 +68,10 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         }else{
             //Log.v(TAG, "Get the list from Bundle");
             moviesListFromJSON = savedInstanceState.getParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY);
+            if(allMoviesList == null){
+                allMoviesList = new ArrayList<>();
+            }
+            allMoviesList.addAll(moviesListFromJSON);
             //Log.v(TAG, "Got the list, now set the adapter");
             setAdapter();
         }
@@ -102,8 +107,8 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Movie detailMovieObj = null;
-        if(moviesListFromJSON != null && moviesListFromJSON.get(position) != null){
-            detailMovieObj = moviesListFromJSON.get(position);
+        if(allMoviesList != null && allMoviesList.get(position) != null){
+            detailMovieObj = allMoviesList.get(position);
         }
 
         Intent intent = new Intent(getActivity(), DetailActivity.class);
@@ -145,7 +150,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         @Override
         protected String doInBackground(String... params) {
             refreshEnabled = false;
-            Log.v(TAG, "In doInBackground with param "+params[0]);
+            //Log.v(TAG, "In doInBackground with param "+params[0]);
             return getMovieJSONString(params[0]);
         }
 
@@ -178,12 +183,16 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 }
             }
             if(moviesListFromJSON != null) {
-                Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
+                //Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
                 /*Call Adapter*/
                 setAdapter();
                 /*increment page count*/
                 pageNo++;
-                Log.v(TAG, "Page Count is " + pageNo);
+                //Log.v(TAG, "Page Count is " + pageNo);
+                if(allMoviesList == null){
+                    allMoviesList = new ArrayList<>();
+                }
+                allMoviesList.addAll(moviesListFromJSON);
             }
             dialog.dismiss();
             refreshEnabled = true;
@@ -229,7 +238,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                     .appendQueryParameter(AppConstants.API_KEY, AppConstants.MOVIE_API_KEY)
                     .build();
 
-            Log.v(TAG, "URI - "+uri.toString());
+            //Log.v(TAG, "URI - "+uri.toString());
             URL url = new URL(uri.toString());
 
             urlConnection = (HttpURLConnection) url.openConnection();
