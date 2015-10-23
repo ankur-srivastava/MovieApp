@@ -1,12 +1,13 @@
 # MovieApp
-This App will display popular movies. 
-It makes a service call to the https://www.themoviedb.org/ 
 
-API Key
-
+This App will display popular movies. It makes a service call to the https://www.themoviedb.org/ 
 The API Key needs to be modified in the AppConstants file. To get one please signup at https://www.themoviedb.org/
 
-Oct 23rd, 2015
+Other Features
+
+1. Infinite Scroll is available.
+2. User can sort by Popularity or Rating
+3. A progress bar has been added when the list is being fetched.
 
 Below are some screenshots from the Current App
 
