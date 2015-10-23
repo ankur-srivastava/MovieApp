@@ -53,30 +53,39 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         moviesListView.setOnItemClickListener(this);
         moviesListView.setOnScrollListener(this);
 
-        /*Get Movies List*/
-        MovieService service = new MovieService();
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean sortOrderPref = sharedPreferences.getBoolean(getString(R.string.pref_rating_sort), false);
-
-        Log.v(TAG, "Shared Pref value is " + sortOrderPref);
-
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
-            if(sortOrderPref) {
-                service.execute(AppConstants.RATING);
-            }else{
-                service.execute(AppConstants.POPULARITY);
-            }
+            getMovieList();
         }else{
-            Log.v(TAG, "Get the list from Bundle");
+            //Log.v(TAG, "Get the list from Bundle");
             moviesListFromJSON = savedInstanceState.getParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY);
-            Log.v(TAG, "Got the list, now set the adapter");
+            //Log.v(TAG, "Got the list, now set the adapter");
             setAdapter();
         }
 
         /*Ends*/
 
         return view;
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        getMovieList();
+    }
+
+    public boolean getSortOrderPref(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean sortOrderPref = sharedPreferences.getBoolean(getString(R.string.pref_rating_sort), false);
+        return sortOrderPref;
+    }
+
+    public void getMovieList(){
+        MovieService service = new MovieService();
+        if(getSortOrderPref()) {
+            service.execute(AppConstants.RATING);
+        }else{
+            service.execute(AppConstants.POPULARITY);
+        }
     }
 
     @Override
@@ -116,7 +125,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             /*Populate the Movie object with the data from the service call*/
             JSONObject jsonObject = null;
             JSONArray jsonArray = null;
-            Log.v(TAG, "Got the following result "+result);
+            //Log.v(TAG, "Got the following result "+result);
             try {
                 jsonObject = new JSONObject(result);
                 if(jsonObject != null){
@@ -155,10 +164,10 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onSaveInstanceState(Bundle bundle){
         super.onSaveInstanceState(bundle);
-        Log.v(TAG, "Device orientation changed");
+        //Log.v(TAG, "Device orientation changed");
         if(moviesListFromJSON != null){
             bundle.putParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY, moviesListFromJSON);
-            Log.v(TAG, "List saved in Bundle");
+            //Log.v(TAG, "List saved in Bundle");
         }
     }
 

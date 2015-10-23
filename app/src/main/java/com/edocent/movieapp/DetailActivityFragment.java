@@ -43,13 +43,17 @@ public class DetailActivityFragment extends Fragment {
         movieDetailRating = (TextView) view.findViewById(R.id.movieDetailRatingId);
         movieDetailOverview = (TextView) view.findViewById(R.id.movieDetailOverviewId);
 
-        if(getActivity().getIntent() != null){
-            movieDetailObject = (Movie) getActivity().getIntent().getExtras().get(AppConstants.DETAIL_MOVIE_OBJECT);
+        if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
+            if(getActivity().getIntent() != null){
+                movieDetailObject = (Movie) getActivity().getIntent().getExtras().get(AppConstants.DETAIL_MOVIE_OBJECT);
+            }
+        }else{
+            movieDetailObject = savedInstanceState.getParcelable(AppConstants.MOVIE_DTL_FROM_BUNDLE_KEY);
         }
 
         if(movieDetailObject != null){
             String imageURL = AppConstants.MOVIE_URL+movieDetailObject.getPosterPath();
-            Log.v(TAG, "Image URL " + imageURL);
+            //Log.v(TAG, "Image URL " + imageURL);
             Picasso.with(getActivity()).load(imageURL).into(movieDetailImage);
             movieDetailTitle.setText(movieDetailObject.getTitle());
             movieDetailYear.setText(movieDetailObject.getReleaseDate());
@@ -59,5 +63,15 @@ public class DetailActivityFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle){
+        super.onSaveInstanceState(bundle);
+        //Log.v(TAG, "Device orientation changed in detailed view");
+        if(movieDetailObject != null){
+            bundle.putParcelable(AppConstants.MOVIE_DTL_FROM_BUNDLE_KEY, movieDetailObject);
+            //Log.v(TAG, "Object saved in Bundle");
+        }
     }
 }
