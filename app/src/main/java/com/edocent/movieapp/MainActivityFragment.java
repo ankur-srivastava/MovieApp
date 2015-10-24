@@ -56,7 +56,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.v(TAG, "------ ON CREATE VIEW ------");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         moviesListView = (GridView)view.findViewById(R.id.moviesListViewId);
         moviesListView.setOnItemClickListener(this);
@@ -154,7 +153,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         @Override
         protected String doInBackground(String... params) {
             refreshEnabled = false;
-            Log.v(TAG, "In doInBackground with param "+params[0]);
+            //Log.v(TAG, "In doInBackground with param "+params[0]);
             return getMovieJSONString(params[0]);
         }
 
@@ -187,12 +186,9 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 }
             }
             if(moviesListFromJSON != null) {
-                Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
-                /*Call Adapter*/
+                //Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
                 setAdapter();
-                /*increment page count*/
                 pageNo++;
-                Log.v(TAG, "Page Count is " + pageNo);
                 if(allMoviesList == null){
                     allMoviesList = new ArrayList<>();
                 }
@@ -216,10 +212,8 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onSaveInstanceState(Bundle bundle){
         super.onSaveInstanceState(bundle);
-        //Log.v(TAG, "Device orientation changed");
         if(moviesListFromJSON != null){
             bundle.putParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY, moviesListFromJSON);
-            //Log.v(TAG, "List saved in Bundle");
         }
     }
 
@@ -234,8 +228,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         String movieJsonStr = null;
 
         try {
-            //URL url = new URL(AppConstants.POPULAR_MOVIES_URL);
-            //sort_by=popularity.desc&api_key="+MOVIE_API_KEY
             Uri uri= Uri.parse(AppConstants.BASE_URL).buildUpon()
                     .appendQueryParameter(AppConstants.PAGE_NO, String.valueOf(pageNo))
                     .appendQueryParameter(AppConstants.SORT_BY, sortBy)
@@ -321,6 +313,5 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onStart(){
         super.onStart();
-        //getMovieList();
     }
 }
