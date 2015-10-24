@@ -8,7 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
-import android.view.KeyEvent;
+import android.util.Log;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
@@ -20,6 +20,8 @@ import android.view.KeyEvent;
  */
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
+
+    private static final String TAG = "SettingsActivity";
 
     @SuppressWarnings("deprecation")
     @Override
@@ -39,32 +41,31 @@ public class SettingsActivity extends PreferenceActivity
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
 
-        // Trigger the listener immediately with the preference's
-        // current value.
         onPreferenceChange(preference,
-                PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getBoolean(preference.getKey(), false));
+                PreferenceManager
+                        .getDefaultSharedPreferences(preference.getContext())
+                        .getString(preference.getKey(), ""));
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object value) {
 
         String stringValue = value.toString();
-        /*
+
         if (preference instanceof ListPreference) {
             ListPreference listPreference = (ListPreference) preference;
             int prefIndex = listPreference.findIndexOfValue(stringValue);
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
-        } else {
-            preference.setSummary(stringValue);
         }
-        */
+        /*
         if(preference instanceof SwitchPreference){
             Boolean prefValue = Boolean.parseBoolean(stringValue);
             SwitchPreference switchPreference = (SwitchPreference) preference;
             switchPreference.setChecked(prefValue);
         }
+        */
         return true;
     }
 

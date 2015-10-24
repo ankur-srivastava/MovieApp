@@ -1,7 +1,6 @@
 package com.edocent.movieapp;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -32,7 +31,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -49,6 +47,8 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     int tempFirstVisibleItem;
     boolean refreshEnabled = true;
 
+    Bundle tempBundle;
+
     public MainActivityFragment() {
 
     }
@@ -56,52 +56,59 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.v(TAG, "------ ON CREATE VIEW ------");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         moviesListView = (GridView)view.findViewById(R.id.moviesListViewId);
         moviesListView.setOnItemClickListener(this);
         moviesListView.setOnScrollListener(this);
 
-        if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
-            if(refreshEnabled){
-                getMovieList();
-            }
-        }else{
-            //Log.v(TAG, "Get the list from Bundle");
-            moviesListFromJSON = savedInstanceState.getParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY);
-            if(allMoviesList == null){
-                allMoviesList = new ArrayList<>();
-            }
-            allMoviesList.addAll(moviesListFromJSON);
-            //Log.v(TAG, "Got the list, now set the adapter");
-            setAdapter();
-        }
-
-        /*Ends*/
+        tempBundle = savedInstanceState;
 
         return view;
     }
 
     @Override
-    public void onStart(){
-        super.onStart();
-        //getMovieList();
+    public void onResume() {
+        super.onResume();
+        if(tempBundle == null || !tempBundle.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
+            if(refreshEnabled){
+                getMovieList();
+            }
+        }else{
+            moviesListFromJSON = tempBundle.getParcelableArrayList(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY);
+            if(allMoviesList == null){
+                allMoviesList = new ArrayList<>();
+            }
+            allMoviesList.addAll(moviesListFromJSON);
+            setAdapter();
+        }
     }
 
-    public boolean getSortOrderPref(){
+    @Override
+    public void onPause(){
+        super.onPause();
+        Log.v(TAG, "---- reset data ----");
+        moviesListFromJSON = null;
+        allMoviesList = null;
+        adapter = null;
+        pageNo = 1;
+        refreshEnabled = true;
+    }
+
+    public String getSortOrderPref(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean sortOrderPref = sharedPreferences.getBoolean(getString(R.string.pref_rating_sort), false);
+        String sortOrderPref = sharedPreferences.getString(getString(R.string.pref_rating_sort), "1");
+        //Log.v(TAG, "Got the following preference "+sortOrderPref);
         return sortOrderPref;
     }
 
     public void getMovieList(){
         MovieService service = new MovieService();
-        //Start progress bar
-        if(getSortOrderPref()) {
+        if(getSortOrderPref().equals("2")) {
             service.execute(AppConstants.RATING);
         }else{
             service.execute(AppConstants.POPULARITY);
         }
-        //Stop progress bar
     }
 
     @Override
@@ -124,10 +131,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        //If the visible item is about to become equal to the count then refresh
-        //To refresh the list fetch is called with new page no -> progress bar started -> adapter notifies data change
-        if(refreshEnabled && (tempFirstVisibleItem != firstVisibleItem) && ((totalItemCount - firstVisibleItem) <= 12)){
-            //Log.v(TAG, "First visible " + firstVisibleItem+"totalItemCount is "+totalItemCount);
+        if(refreshEnabled && (tempFirstVisibleItem != firstVisibleItem) && ((totalItemCount - firstVisibleItem) <= AppConstants.FETCH_LIMIT)){
             tempFirstVisibleItem = firstVisibleItem;
             getMovieList();
         }
@@ -150,7 +154,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         @Override
         protected String doInBackground(String... params) {
             refreshEnabled = false;
-            //Log.v(TAG, "In doInBackground with param "+params[0]);
+            Log.v(TAG, "In doInBackground with param "+params[0]);
             return getMovieJSONString(params[0]);
         }
 
@@ -183,12 +187,12 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 }
             }
             if(moviesListFromJSON != null) {
-                //Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
+                Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
                 /*Call Adapter*/
                 setAdapter();
                 /*increment page count*/
                 pageNo++;
-                //Log.v(TAG, "Page Count is " + pageNo);
+                Log.v(TAG, "Page Count is " + pageNo);
                 if(allMoviesList == null){
                     allMoviesList = new ArrayList<>();
                 }
@@ -312,5 +316,11 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             year = date;
         }
         return year;
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        //getMovieList();
     }
 }
