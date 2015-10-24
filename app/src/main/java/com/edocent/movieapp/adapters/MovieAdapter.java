@@ -2,6 +2,7 @@ package com.edocent.movieapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,24 +36,41 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         this.mMovieList = movieList;
     }
 
+
+    //Sizes - "w92", "w154", "w185", "w342", "w500", "w780", or "original"
+    //Sample image URL - http://image.tmdb.org/t/p/w75/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup){
+        ViewHolderItem viewHolderItem;
+
         Movie movie = mMovieList.get(position);
 
-        LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
-        convertView = inflater.inflate(resource, viewGroup, false);
+        if(convertView == null){
+            LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
+            convertView = inflater.inflate(resource, viewGroup, false);
+            viewHolderItem = new ViewHolderItem();
+            viewHolderItem.movieIconItem = (ImageView) convertView.findViewById(R.id.movieIconId);
+            convertView.setTag(viewHolderItem);
+        }else{
+            viewHolderItem = (ViewHolderItem) convertView.getTag();
+        }
 
-        //TextView titleText = (TextView) convertView.findViewById(R.id.movieTitleId);
-        //titleText.setText(movie.getTitle());
-
-        //Sizes - 75, 150, 300, 500
-        //Image URL - http://image.tmdb.org/t/p/w75/5JU9ytZJyR3zmClGmVm9q4Geqbd.jpg
-        // "w92", "w154", "w185", "w342", "w500", "w780", or "original" - w185 is recommended
-        ImageView movieIcon = (ImageView) convertView.findViewById(R.id.movieIconId);
+        //ImageView movieIcon = (ImageView) convertView.findViewById(R.id.movieIconId);
         String imageURL = AppConstants.MOVIE_URL+movie.getPosterPath();
-        //Log.v(TAG, "Image URL "+imageURL);
-        //add this compile 'com.squareup.picasso:picasso:2.5.2'
-        Picasso.with(getContext()).load(imageURL).into(movieIcon);
+
+        try {
+            if(imageURL != null && !imageURL.equals("")){
+                Picasso.with(getContext()).load(Uri.parse(imageURL)).into(viewHolderItem.movieIconItem);
+            }
+        }catch (Exception ex){
+            Log.e(TAG, "Problem with the URL "+ex.getMessage());
+        }
+
         return convertView;
+    }
+
+    /*Added to use ViewHolder pattern*/
+    static class ViewHolderItem{
+        ImageView movieIconItem;
     }
 }

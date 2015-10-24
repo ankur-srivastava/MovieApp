@@ -282,28 +282,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     /*Map JSON to Movie object*/
-    /*
-    * Sample response
-    *               "adult": false,
-	                "backdrop_path": "/dkMD5qlogeRMiEixC4YNPUvax2T.jpg",
-	                "genre_ids": [
-	                    28,
-	                    12,
-	                    878,
-	                    53
-	                ],
-	                "id": 135397,
-	                "original_language": "en",
-	                "original_title": "Jurassic World",
-	                "overview": "Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.",
-	                "release_date": "2015-06-12",
-	                "poster_path": "/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
-	                "popularity": 52.196327,
-	                "title": "Jurassic World",
-	                "video": false,
-	                "vote_average": 6.9,
-	                "vote_count": 2657
-    * */
     public Movie mapMovieData(JSONObject tempObject){
         if(tempObject == null){
             return null;
