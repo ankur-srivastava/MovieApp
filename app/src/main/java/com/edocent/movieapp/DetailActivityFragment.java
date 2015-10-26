@@ -130,13 +130,14 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
                 Log.e(TAG, e.getMessage());
             }
             if(uri != null){
-                Log.v(TAG, "Video URI "+uri.toString());
+                //Log.v(TAG, "Video URI " + uri.toString());
                 Intent intent = new Intent(Intent.ACTION_VIEW);
+                //intent.setDataAndType(uri, "video/*");
                 intent.setData(uri);
-                intent.setType("video/*");
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(intent);
                 }
+
             }else{
                 Toast.makeText(getActivity(), "Some problem with the video", Toast.LENGTH_SHORT).show();
             }
