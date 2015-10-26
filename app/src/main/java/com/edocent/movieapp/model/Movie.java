@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by SRIVASTAVAA on 10/20/2015.
@@ -18,6 +19,7 @@ public class Movie implements Parcelable{
     String voteCount;
     String movieLength;
     String voteAverage;
+    ArrayList<Trailer> trailersList;
 
     public Movie() {
     }
@@ -122,5 +124,13 @@ public class Movie implements Parcelable{
 
     public void setVoteAverage(String voteAverage) {
         this.voteAverage = voteAverage;
+    }
+
+    public ArrayList<Trailer> getTrailersList() {
+        return trailersList;
+    }
+
+    public void setTrailersList(ArrayList<Trailer> trailersList) {
+        this.trailersList = trailersList;
     }
 }

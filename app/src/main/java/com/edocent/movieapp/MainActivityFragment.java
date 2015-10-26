@@ -285,6 +285,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         Movie tempMovie = new Movie();
         try {
             tempMovie.setTitle(tempObject.getString("title"));
+            tempMovie.setMovieId(tempObject.getLong("id"));
             if(tempObject.getString("release_date") != null && !tempObject.getString("release_date").equals("")){
                 tempMovie.setReleaseDate(getYear(tempObject.getString("release_date")));
             }
