@@ -1,6 +1,7 @@
 package com.edocent.movieapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.edocent.movieapp.adapters.TrailerAdapter;
 import com.edocent.movieapp.model.Movie;
@@ -105,19 +107,6 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         }
     }
 
-    /**
-     * Callback method to be invoked when an item in this AdapterView has
-     * been clicked.
-     * <p>
-     * Implementers can call getItemAtPosition(position) if they need
-     * to access the data associated with the selected item.
-     *
-     * @param parent   The AdapterView where the click happened.
-     * @param view     The view within the AdapterView that was clicked (this
-     *                 will be a view provided by the adapter)
-     * @param position The position of the view in the adapter.
-     * @param id       The row id of the item that was clicked.
-     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Trailer tempTrailer = null;
@@ -125,8 +114,27 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
             tempTrailer = trailers.get(position);
         }
         if(tempTrailer != null){
-            Log.v(TAG, "Following trailer was invoked "+tempTrailer.getTrailerName());
+            Log.v(TAG, "Following trailer was invoked " + tempTrailer.getTrailerName());
             //Invoke youtube
+            String youtubeURL = AppConstants.MOVIE_YOUTUBE_URL+"/"+tempTrailer.getTrailerKey();
+
+            Uri uri = null;
+            try {
+                uri = Uri.parse(youtubeURL).buildUpon().build();
+            }catch (Exception e){
+                Log.e(TAG, e.getMessage());
+            }
+            if(uri != null){
+                Log.v(TAG, "Video URI "+uri.toString());
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(uri);
+                intent.setType("video/*");
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }else{
+                Toast.makeText(getActivity(), "Some problem with the video", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
