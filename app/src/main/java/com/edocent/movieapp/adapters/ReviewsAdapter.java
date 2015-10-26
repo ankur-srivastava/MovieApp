@@ -9,26 +9,27 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.edocent.movieapp.R;
-import com.edocent.movieapp.model.Trailer;
+import com.edocent.movieapp.model.Review;
+import com.edocent.movieapp.utilities.AppConstants;
 
 import java.util.List;
 
 /**
  * Created by SRIVASTAVAA on 10/20/2015.
  */
-public class ReviewsAdapter extends ArrayAdapter<Trailer> {
+public class ReviewsAdapter extends ArrayAdapter<Review> {
 
     static final String TAG = ReviewsAdapter.class.getSimpleName();
 
     Context mContext;
     int resource;
-    List<Trailer> mTrailerList;
+    List<Review> mReviewList;
 
-    public ReviewsAdapter(Context context, int resource, List<Trailer> mTrailerList) {
-        super(context, resource, mTrailerList);
+    public ReviewsAdapter(Context context, int resource, List<Review> mReviewList) {
+        super(context, resource, mReviewList);
         this.mContext = context;
         this.resource = resource;
-        this.mTrailerList = mTrailerList;
+        this.mReviewList = mReviewList;
     }
 
 
@@ -56,33 +57,40 @@ public class ReviewsAdapter extends ArrayAdapter<Trailer> {
     }
     * */
 
-    /*
-    * http://api.themoviedb.org/3/movie/movie_id/videos?api_key=2488d2824d22372dac5e1c8f6e779c5f
-    * */
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup){
         ViewHolderItem viewHolderItem;
 
-        Trailer trailer = mTrailerList.get(position);
+        Review review = mReviewList.get(position);
 
         if(convertView == null){
             LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
             convertView = inflater.inflate(resource, viewGroup, false);
+
             viewHolderItem = new ViewHolderItem();
-            viewHolderItem.trailerTitle = (TextView) convertView.findViewById(R.id.trailerTitleId);
+            viewHolderItem.reviewTitle = (TextView) convertView.findViewById(R.id.reviewTitleId);
+            viewHolderItem.reviewAuthor = (TextView) convertView.findViewById(R.id.reviewAuthorId);
+
             convertView.setTag(viewHolderItem);
         }else{
             viewHolderItem = (ViewHolderItem) convertView.getTag();
         }
 
-        viewHolderItem.trailerTitle.setText(trailer.getTrailerName());
+        viewHolderItem.reviewTitle.setText(getReviewTitle(review.getContent()));
+        viewHolderItem.reviewAuthor.setText(review.getAuthor());
 
         return convertView;
     }
 
-    /*Added to use ViewHolder pattern*/
     static class ViewHolderItem{
-        TextView trailerTitle;
+        TextView reviewTitle;
+        TextView reviewAuthor;
+    }
 
+    public String getReviewTitle(String content){
+        if(content.length() > AppConstants.REVIEW_TITLE_LENGTH){
+            return content.substring(0, AppConstants.REVIEW_TITLE_LENGTH);
+        }
+        return content;
     }
 }
