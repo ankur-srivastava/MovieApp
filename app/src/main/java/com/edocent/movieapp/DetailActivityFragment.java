@@ -91,7 +91,12 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
             movieDetailRating.setText(movieDetailObject.getVoteAverage());
             movieDetailOverview.setText(movieDetailObject.getOverview());
 
+            //For Trailers
             new VideoURLService().execute(movieDetailObject.getMovieId());
+
+            // For Review open a new fragment with a list to display all the reviews. Pass movie id to this fragment
+            // /movie/{id}/reviews
+            // MovieReviewsFragment
         }
 
         return view;
