@@ -10,6 +10,16 @@ public class Review {
     String content;
     String url;
 
+    @Override
+    public String toString() {
+        return "Review{" +
+                "reviewId=" + reviewId +
+                ", author='" + author + '\'' +
+                ", content='" + content + '\'' +
+                ", url='" + url + '\'' +
+                '}';
+    }
+
     public long getReviewId() {
         return reviewId;
     }

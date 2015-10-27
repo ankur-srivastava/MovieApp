@@ -128,6 +128,7 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
                             Log.e(TAG, e.getMessage());
                         }
                         if(tempJsonObject != null){
+                            Log.v(TAG, "Check the JSON object "+tempJsonObject.toString());
                             Review tempReview = new Review();
 
                             try {
@@ -138,6 +139,7 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
                             } catch (JSONException e) {
                                 Log.e(TAG, e.getMessage());
                             }
+                            Log.v(TAG, "Review object added is "+tempReview);
                             reviews.add(tempReview);
                         }
                     }
