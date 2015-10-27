@@ -2,6 +2,7 @@ package com.edocent.movieapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,24 +61,26 @@ public class ReviewsAdapter extends ArrayAdapter<Review> {
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup){
         ViewHolderItem viewHolderItem;
+        if(mReviewList != null && mReviewList.size() > 0){
+            Log.v(TAG, "Review list size in adapter "+mReviewList.size());
+            Review review = mReviewList.get(position);
+            Log.v(TAG, "Got review object "+review.getAuthor());
+            if(convertView == null){
+                LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
+                convertView = inflater.inflate(resource, viewGroup, false);
 
-        Review review = mReviewList.get(position);
+                viewHolderItem = new ViewHolderItem();
+                viewHolderItem.reviewTitle = (TextView) convertView.findViewById(R.id.reviewTitleId);
+                viewHolderItem.reviewAuthor = (TextView) convertView.findViewById(R.id.reviewAuthorId);
 
-        if(convertView == null){
-            LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
-            convertView = inflater.inflate(resource, viewGroup, false);
+                convertView.setTag(viewHolderItem);
+            }else{
+                viewHolderItem = (ViewHolderItem) convertView.getTag();
+            }
 
-            viewHolderItem = new ViewHolderItem();
-            viewHolderItem.reviewTitle = (TextView) convertView.findViewById(R.id.reviewTitleId);
-            viewHolderItem.reviewAuthor = (TextView) convertView.findViewById(R.id.reviewAuthorId);
-
-            convertView.setTag(viewHolderItem);
-        }else{
-            viewHolderItem = (ViewHolderItem) convertView.getTag();
+            viewHolderItem.reviewTitle.setText(getReviewTitle(review.getContent()));
+            viewHolderItem.reviewAuthor.setText(review.getAuthor());
         }
-
-        viewHolderItem.reviewTitle.setText(getReviewTitle(review.getContent()));
-        viewHolderItem.reviewAuthor.setText(review.getAuthor());
 
         return convertView;
     }
@@ -88,7 +91,7 @@ public class ReviewsAdapter extends ArrayAdapter<Review> {
     }
 
     public String getReviewTitle(String content){
-        if(content.length() > AppConstants.REVIEW_TITLE_LENGTH){
+        if(content != null && !content.equals("") && content.length() > AppConstants.REVIEW_TITLE_LENGTH){
             return content.substring(0, AppConstants.REVIEW_TITLE_LENGTH);
         }
         return content;

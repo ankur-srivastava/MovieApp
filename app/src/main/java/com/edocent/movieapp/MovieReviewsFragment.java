@@ -57,6 +57,8 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
         reviewsListId = (ListView) view.findViewById(R.id.reviewsListId);
         reviewsListId.setOnItemClickListener(this);
 
+        new ReviewsFetch().execute(movieId);
+
         return view;
     }
 
@@ -71,7 +73,7 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
-    public class ReviewsFetch extends AsyncTask<Integer, Void, String>{
+    public class ReviewsFetch extends AsyncTask<Long, Void, String>{
 
         private ProgressDialog dialog =
                 new ProgressDialog(getActivity());
@@ -79,12 +81,12 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            dialog.setMessage("Getting the trailers !!");
+            dialog.setMessage("Getting the Reviews !!");
             dialog.show();
         }
 
         @Override
-        protected String doInBackground(Integer[] params) {
+        protected String doInBackground(Long[] params) {
             long movieId = 0;
 
             if(params[0] != null){
@@ -144,6 +146,7 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
                     Log.v(TAG, "Review List " + reviews.size());
                     reviewsAdapter = new ReviewsAdapter(getActivity(), R.layout.list_item_review, reviews);
                     reviewsListId.setAdapter(reviewsAdapter);
+                    Log.v(TAG, "Adapter set ");
                 }
             }
             dialog.dismiss();

@@ -1,10 +1,11 @@
 package com.edocent.movieapp;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +31,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,12 +50,25 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
     TextView movieDetailLength;
     TextView movieDetailRating;
     TextView movieDetailOverview;
+    TextView viewReviewsId;
     TrailerAdapter mTrailerAdapter;
     ListView trailerListView;
+    ReviewScreen mReviewScreen;
 
     ArrayList<Trailer> trailers;
 
     public DetailActivityFragment() {
+
+    }
+
+    static interface ReviewScreen{
+        void displayReviews(long movieId);
+    }
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        mReviewScreen = (ReviewScreen) activity;
     }
 
     @Override
@@ -69,9 +82,19 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         movieDetailLength = (TextView) view.findViewById(R.id.movieDetailLengthId);
         movieDetailRating = (TextView) view.findViewById(R.id.movieDetailRatingId);
         movieDetailOverview = (TextView) view.findViewById(R.id.movieDetailOverviewId);
+        viewReviewsId = (TextView) view.findViewById(R.id.viewReviewsId);
         trailerListView = (ListView) view.findViewById(R.id.trailersListId);
 
+
         trailerListView.setOnItemClickListener(this);
+        viewReviewsId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Call Review Fragment
+                Log.v(TAG, "Reviews clicked ..");
+                mReviewScreen.displayReviews(movieDetailObject.getMovieId());
+            }
+        });
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
             if(getActivity().getIntent() != null){

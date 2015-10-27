@@ -1,21 +1,23 @@
 package com.edocent.movieapp;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends Activity implements DetailActivityFragment.ReviewScreen{
+
+    private static final String TAG = "DetailActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_detail);
+
+        setupDetailFragment();
     }
 
     @Override
@@ -38,5 +40,28 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void displayReviews(long movieId) {
+        Log.v(TAG, "Reviews clicked in Activity .. "+movieId);
+        MovieReviewsFragment movieReviewsFragment = new MovieReviewsFragment();
+        movieReviewsFragment.setMovieId(movieId);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.movieDetailFragmentId, movieReviewsFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    public void setupDetailFragment(){
+        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.movieDetailFragmentId, detailActivityFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
