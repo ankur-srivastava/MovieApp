@@ -77,8 +77,10 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
         Review reviewObject = reviews.get(position);
 
         if(reviewObject != null){
-            Log.v(TAG, "Got the  following review object "+reviewObject.getReviewId());
-            //Open a detail fragment
+            Log.v(TAG, "Got the  following review object "+reviewObject.getAuthor());
+            if(reviewDetail != null){
+                reviewDetail.displayReviewDetail(reviewObject);
+            }
             
         }
     }
@@ -138,27 +140,23 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
                             Log.e(TAG, e.getMessage());
                         }
                         if(tempJsonObject != null){
-                            Log.v(TAG, "Check the JSON object "+tempJsonObject.toString());
                             Review tempReview = new Review();
 
                             try {
-                                tempReview.setReviewId(tempJsonObject.getLong("id"));
+                                //tempReview.setReviewId(tempJsonObject.getLong("id"));
                                 tempReview.setAuthor(tempJsonObject.getString("author"));
                                 tempReview.setContent(tempJsonObject.getString("content"));
                                 tempReview.setUrl(tempJsonObject.getString("url"));
                             } catch (JSONException e) {
                                 Log.e(TAG, e.getMessage());
                             }
-                            Log.v(TAG, "Review object added is "+tempReview);
                             reviews.add(tempReview);
                         }
                     }
                 }
                 if(reviews != null && reviews.size() > 0){
-                    Log.v(TAG, "Review List " + reviews.size());
                     reviewsAdapter = new ReviewsAdapter(getActivity(), R.layout.list_item_review, reviews);
                     reviewsListId.setAdapter(reviewsAdapter);
-                    Log.v(TAG, "Adapter set ");
                 }
             }
             dialog.dismiss();

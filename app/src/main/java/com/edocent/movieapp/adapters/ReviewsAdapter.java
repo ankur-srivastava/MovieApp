@@ -79,7 +79,7 @@ public class ReviewsAdapter extends ArrayAdapter<Review> {
             }
 
             viewHolderItem.reviewTitle.setText(getReviewTitle(review.getContent()));
-            viewHolderItem.reviewAuthor.setText(review.getAuthor());
+            viewHolderItem.reviewAuthor.setText("By "+review.getAuthor());
         }
 
         return convertView;
@@ -92,7 +92,8 @@ public class ReviewsAdapter extends ArrayAdapter<Review> {
 
     public String getReviewTitle(String content){
         if(content != null && !content.equals("") && content.length() > AppConstants.REVIEW_TITLE_LENGTH){
-            return content.substring(0, AppConstants.REVIEW_TITLE_LENGTH);
+            content = content.substring(0, AppConstants.REVIEW_TITLE_LENGTH);
+            return content;
         }
         return content;
     }

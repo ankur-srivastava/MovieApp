@@ -33,7 +33,7 @@ public class ReviewDetailFragment extends Fragment {
         reviewDetailAuthorId = (TextView) view.findViewById(R.id.reviewDetailAuthorId);
         reviewDetailContentId = (TextView) view.findViewById(R.id.reviewDetailContentId);
 
-        reviewDetailAuthorId.setText(review.getAuthor());
+        reviewDetailAuthorId.setText("By "+review.getAuthor());
         reviewDetailContentId.setText(review.getContent());
 
         return view;
