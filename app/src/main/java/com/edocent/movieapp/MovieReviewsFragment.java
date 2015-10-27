@@ -1,6 +1,7 @@
 package com.edocent.movieapp;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,9 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.edocent.movieapp.adapters.ReviewsAdapter;
-import com.edocent.movieapp.adapters.TrailerAdapter;
 import com.edocent.movieapp.model.Review;
-import com.edocent.movieapp.model.Trailer;
 import com.edocent.movieapp.utilities.AppConstants;
 
 import org.json.JSONArray;
@@ -44,9 +43,20 @@ public class MovieReviewsFragment extends Fragment implements AdapterView.OnItem
     ListView reviewsListId;
     ArrayList<Review> reviews;
     ReviewsAdapter reviewsAdapter;
+    ReviewDetail reviewDetail;
 
     public MovieReviewsFragment() {
         // Required empty public constructor
+    }
+
+    static interface ReviewDetail{
+        void displayReviewDetail(Review review);
+    }
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        reviewDetail = (ReviewDetail) activity;
     }
 
     @Override

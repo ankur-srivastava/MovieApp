@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class DetailActivity extends Activity implements DetailActivityFragment.ReviewScreen{
+import com.edocent.movieapp.model.Review;
+
+public class DetailActivity extends Activity implements DetailActivityFragment.ReviewScreen, MovieReviewsFragment.ReviewDetail{
 
     private static final String TAG = "DetailActivity";
 
@@ -60,6 +62,19 @@ public class DetailActivity extends Activity implements DetailActivityFragment.R
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.movieDetailFragmentId, detailActivityFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void displayReviewDetail(Review review) {
+        Log.v(TAG, "Reviews clicked in Activity .. "+review.getAuthor());
+        ReviewDetailFragment reviewDetailFragment = new ReviewDetailFragment();
+        reviewDetailFragment.setReview(review);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.movieDetailFragmentId, reviewDetailFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
