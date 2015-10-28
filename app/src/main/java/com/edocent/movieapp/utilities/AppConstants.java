@@ -24,4 +24,6 @@ public class AppConstants {
     // http://api.themoviedb.org/3/movie/177677/reviews?api_key=2488d2824d22372dac5e1c8f6e779c5f
     public static final String MOVIE_REVIEWS_URL="http://api.themoviedb.org/3/movie";
     public static final int REVIEW_TITLE_LENGTH=80;
+    public static final String DB_NAME="Movie";
+    public static final int DB_VERSION=1;
 }
