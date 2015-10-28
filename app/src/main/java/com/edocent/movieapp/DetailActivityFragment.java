@@ -61,6 +61,10 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
 
     }
 
+    public void setMovieDetailObject(Movie movieDetailObject) {
+        this.movieDetailObject = movieDetailObject;
+    }
+
     static interface ReviewScreen{
         void displayReviews(long movieId);
     }
@@ -97,8 +101,10 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         });
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
-            if(getActivity().getIntent() != null){
-                movieDetailObject = (Movie) getActivity().getIntent().getExtras().get(AppConstants.DETAIL_MOVIE_OBJECT);
+            if(movieDetailObject == null) {
+                if (getActivity().getIntent() != null) {
+                    movieDetailObject = (Movie) getActivity().getIntent().getExtras().get(AppConstants.DETAIL_MOVIE_OBJECT);
+                }
             }
         }else{
             movieDetailObject = savedInstanceState.getParcelable(AppConstants.MOVIE_DTL_FROM_BUNDLE_KEY);

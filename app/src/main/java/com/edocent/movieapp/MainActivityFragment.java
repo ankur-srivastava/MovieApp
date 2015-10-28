@@ -1,12 +1,13 @@
 package com.edocent.movieapp;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -112,15 +113,36 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //Check for small and large device
+
+        View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
+
         Movie detailMovieObj = null;
         if(allMoviesList != null && allMoviesList.get(position) != null){
             detailMovieObj = allMoviesList.get(position);
         }
+        Log.v(TAG, "Check Section 2");
+        if(largeSectionTwoFragment != null){
+            Log.v(TAG, "Section 2 fragment available");
+            loadDetailFragment(detailMovieObj);
+        }else{
+            Intent intent = new Intent(getActivity(), DetailActivity.class);
+            intent.putExtra(AppConstants.DETAIL_MOVIE_OBJECT, detailMovieObj);
 
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra(AppConstants.DETAIL_MOVIE_OBJECT, detailMovieObj);
+            startActivity(intent);
+        }
+    }
 
-        startActivity(intent);
+    private void loadDetailFragment(Movie movieObject) {
+        //We have two fragments
+        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
+        detailActivityFragment.setMovieDetailObject(movieObject);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.sectionTwoFragmentId, detailActivityFragment);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        fragmentTransaction.commit();
+
     }
 
     @Override
