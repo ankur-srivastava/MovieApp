@@ -19,6 +19,7 @@ public class Movie implements Parcelable{
     String voteCount;
     String movieLength;
     String voteAverage;
+    String favorite;
     ArrayList<Trailer> trailersList;
 
     public Movie() {
@@ -132,5 +133,13 @@ public class Movie implements Parcelable{
 
     public void setTrailersList(ArrayList<Trailer> trailersList) {
         this.trailersList = trailersList;
+    }
+
+    public String getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(String favorite) {
+        this.favorite = favorite;
     }
 }

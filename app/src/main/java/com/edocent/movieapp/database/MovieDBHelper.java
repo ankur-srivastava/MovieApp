@@ -7,11 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.utilities.AppConstants;
 
@@ -29,46 +24,52 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //Add Movie table
-        db.execSQL("CREATE TABLE MOVIE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "MOVIEID INTEGER"
-                + "TITLE TEXT"
-                + "OVERVIEW TEXT"
-                + "RELEASEDATE TEXT"
-                + "POSTERPATH TEXT"
-                + "COUNT TEXT"
-                + "LENGTH TEXT"
-                + "AVERAGE TEXT"
-                + ")");
+        onUpgrade(db, 0, AppConstants.DB_VERSION);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if(oldVersion < AppConstants.DB_VERSION){
+            //Add Movie table
+            db.execSQL("CREATE TABLE MOVIE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    +"MOVIEID INTEGER"
+                    +"TITLE TEXT"
+                    +"OVERVIEW TEXT"
+                    +"RELEASEDATE TEXT"
+                    +"POSTERPATH TEXT"
+                    +"COUNT TEXT"
+                    +"LENGTH TEXT"
+                    +"AVERAGE TEXT"
+                    +"FAVORITE TEXT"
+                    +")");
+        }
     }
 
     public static void updateMovie(SQLiteOpenHelper helper, Movie movie){
-        boolean movieExists = false;
-
-        //Check if movie exists
         SQLiteDatabase db = helper.getReadableDatabase();
-
-
-
-        if(movieExists){
+        Movie movieFromDB = getMovie(helper, (int)movie.getMovieId());
+        if(movieFromDB != null){
             //Update
+            if(movieFromDB.getFavorite() == null || movieFromDB.getFavorite().equals("") || movieFromDB.getFavorite().equals(AppConstants.NOT_FAVORITE_MOVIE)){
+                movieFromDB.setFavorite(AppConstants.FAVORITE_MOVIE);
+            }else{
+                movieFromDB.setFavorite(AppConstants.NOT_FAVORITE_MOVIE);
+            }
+
         }else{
             //Add
+
         }
     }
 
     public static Movie getMovie(SQLiteOpenHelper helper, int movieId){
         Movie movie = null;
+        SQLiteDatabase db = helper.getReadableDatabase();
         try {
-            SQLiteDatabase db = helper.getReadableDatabase();
+
 
             if (db != null) {
-                Cursor c = db.query("MOVIE", new String[]{"TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH", "AVERAGE"},
+                Cursor c = db.query("MOVIE", new String[]{"TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH", "AVERAGE", "FAVORITE"},
                         "MOVIEID=?",
                         new String[]{Integer.toString(movieId)},
                         null, null, null);
@@ -81,13 +82,15 @@ public class MovieDBHelper extends SQLiteOpenHelper {
                     movie.setVoteCount(c.getString(4));
                     movie.setMovieLength(c.getString(5));
                     movie.setVoteAverage(c.getString(6));
+                    movie.setFavorite(c.getString(7));
                 }
 
                 c.close();
-                db.close();
             }
         }catch(SQLiteException ex){
             Log.e(TAG, ex.getMessage());
+        }finally{
+            db.close();
         }
         return movie;
     }

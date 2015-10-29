@@ -26,4 +26,6 @@ public class AppConstants {
     public static final int REVIEW_TITLE_LENGTH=80;
     public static final String DB_NAME="Movie";
     public static final int DB_VERSION=1;
+    public static final String FAVORITE_MOVIE="Y";
+    public static final String NOT_FAVORITE_MOVIE="N";
 }
