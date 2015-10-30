@@ -1,5 +1,6 @@
 package com.edocent.movieapp.database;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,11 +9,16 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.GridView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.edocent.movieapp.DetailActivity;
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.utilities.AppConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Ankur on 10/28/2015.
@@ -23,6 +29,8 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
     static ContentValues movieContentValues;
     static Context context;
+    static Cursor tempCursor;
+    static GridView moviesListView;
 
     public MovieDBHelper(Context context) {
         super(context, AppConstants.DB_NAME, null, AppConstants.DB_VERSION);
@@ -51,11 +59,38 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static class FavoriteMovies extends AsyncTask{
+    public static class FavoriteMovies extends AsyncTask<Object, Void, SimpleCursorAdapter>{
+
+        private ProgressDialog dialog;
 
         @Override
-        protected Object doInBackground(Object[] params) {
-            return null;
+        protected void onPreExecute(){
+            super.onPreExecute();
+        }
+
+        @Override
+        protected SimpleCursorAdapter doInBackground(Object[] params) {
+
+            SQLiteOpenHelper tempDBHelper = (SQLiteOpenHelper) params[0];
+
+            context = (Context)params[0];
+            moviesListView = (GridView) params[1];
+
+            dialog=new ProgressDialog(context);
+            dialog.setMessage("Getting your Favorite Movies !!");
+            dialog.show();
+
+            SimpleCursorAdapter simpleCursorAdapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_1,
+                    getFavoriteMoviesCursor(tempDBHelper), new String[]{"POSTERPATH"}, new int[]{}, 0);
+            return simpleCursorAdapter;
+        }
+
+        @Override
+        protected void onPostExecute(SimpleCursorAdapter adapter){
+            //Setup the cursor adapter using this list
+            moviesListView.setAdapter(adapter);
+            Log.v(TAG, "Adapter set");
+            dialog.dismiss();
         }
     }
 
@@ -124,7 +159,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
     public static boolean addMovie(SQLiteDatabase db, ContentValues cv){
         Log.v(TAG, "Ready to Add");
         try{
-            db.insert("MOVIE",null,cv);
+            db.insert("MOVIE", null, cv);
             Log.v(TAG, "Movie Added");
             if(context != null){
                 Toast.makeText(context, "Movie added to Favorites", Toast.LENGTH_SHORT).show();
@@ -168,5 +203,61 @@ public class MovieDBHelper extends SQLiteOpenHelper {
             db.close();
         }
         return movie;
+    }
+
+    public static ArrayList<Movie> getFavoriteMovies(SQLiteOpenHelper helper){
+        ArrayList<Movie> movieList = null;
+        SQLiteDatabase db = helper.getReadableDatabase();
+        try {
+            if (db != null) {
+                Cursor c = db.query("MOVIE",
+                            new String[]{"_id", "TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
+                                    "AVERAGE", "FAVORITE"},
+                        null,null,null, null, null);
+
+                movieList = new ArrayList<>();
+
+                if(c.getCount() > 0){
+                    while(c.moveToNext()){
+                        Movie movie = new Movie();
+                        movie.setId(c.getInt(0));
+                        movie.setTitle(c.getString(1));
+                        movie.setOverview(c.getString(2));
+                        movie.setReleaseDate(c.getString(3));
+                        movie.setPosterPath(c.getString(4));
+                        movie.setVoteCount(c.getString(5));
+                        movie.setMovieLength(c.getString(6));
+                        movie.setVoteAverage(c.getString(7));
+                        movie.setFavorite(c.getString(8));
+                        movieList.add(movie);
+                    }
+                }
+
+                c.close();
+            }
+        }catch(SQLiteException ex){
+            Log.e(TAG, ex.getMessage());
+        }finally{
+            db.close();
+        }
+        return movieList;
+    }
+
+    public static Cursor getFavoriteMoviesCursor(SQLiteOpenHelper helper){
+        SQLiteDatabase db = helper.getReadableDatabase();
+        try {
+            if (db != null) {
+                tempCursor = db.query("MOVIE",
+                        //new String[]{"_id", "TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
+                                //"AVERAGE", "FAVORITE"},
+                        new String[]{"_id", "POSTERPATH"},
+                        null,null,null, null, null);
+            }
+        }catch(SQLiteException ex){
+            Log.e(TAG, ex.getMessage());
+        }finally{
+            db.close();
+        }
+        return tempCursor;
     }
 }

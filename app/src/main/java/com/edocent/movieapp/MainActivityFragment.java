@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.edocent.movieapp.adapters.MovieAdapter;
+import com.edocent.movieapp.database.MovieDBHelper;
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.utilities.AppConstants;
 
@@ -106,7 +107,8 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         MovieService service = new MovieService();
         if(getSortOrderPref().equals("3")) {
             //3 is for the Favorite option
-
+            Log.v(TAG, "Fetch and set the Favorites");
+            setCursorAdapter();
         }else if(getSortOrderPref().equals("2")) {
             service.execute(AppConstants.RATING);
         }else{
@@ -232,6 +234,10 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             adapter.addAll(moviesListFromJSON);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public void setCursorAdapter(){
+        new MovieDBHelper.FavoriteMovies().execute(getActivity(), moviesListView);
     }
 
     @Override
