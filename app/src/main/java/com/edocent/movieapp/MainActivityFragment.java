@@ -104,7 +104,10 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     public void getMovieList(){
         MovieService service = new MovieService();
-        if(getSortOrderPref().equals("2")) {
+        if(getSortOrderPref().equals("3")) {
+            //3 is for the Favorite option
+
+        }else if(getSortOrderPref().equals("2")) {
             service.execute(AppConstants.RATING);
         }else{
             service.execute(AppConstants.POPULARITY);

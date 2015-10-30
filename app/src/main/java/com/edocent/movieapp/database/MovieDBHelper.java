@@ -51,6 +51,14 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public static class FavoriteMovies extends AsyncTask{
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            return null;
+        }
+    }
+
     public static class UpdateMovieAsync extends AsyncTask{
 
         @Override
