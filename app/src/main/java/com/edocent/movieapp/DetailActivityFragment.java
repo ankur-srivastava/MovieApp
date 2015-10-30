@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.edocent.movieapp.adapters.TrailerAdapter;
+import com.edocent.movieapp.database.MovieDBHelper;
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.model.Trailer;
 import com.edocent.movieapp.utilities.AppConstants;
@@ -45,6 +46,7 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
 
     Movie movieDetailObject;
     ImageView movieDetailImage;
+    ImageView favoriteIconId;
     TextView movieDetailTitle;
     TextView movieDetailYear;
     TextView movieDetailLength;
@@ -88,6 +90,7 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         movieDetailOverview = (TextView) view.findViewById(R.id.movieDetailOverviewId);
         viewReviewsId = (TextView) view.findViewById(R.id.viewReviewsId);
         trailerListView = (ListView) view.findViewById(R.id.trailersListId);
+        favoriteIconId = (ImageView) view.findViewById(R.id.favoriteIconId);
 
 
         trailerListView.setOnItemClickListener(this);
@@ -111,6 +114,17 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         }
 
         if(movieDetailObject != null){
+
+            favoriteIconId.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Check with the Database - if a row exists for this movie then update the flag
+                    Log.v(TAG, "Fav Icon clicked");
+                    MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
+                    new MovieDBHelper.UpdateMovieAsync().execute(movieDBHelper, movieDetailObject, getActivity());
+                }
+            });
+
             String imageURL = AppConstants.MOVIE_URL+movieDetailObject.getPosterPath();
             //Log.v(TAG, "Image URL " + imageURL);
             Picasso.with(getActivity()).load(imageURL).into(movieDetailImage);
