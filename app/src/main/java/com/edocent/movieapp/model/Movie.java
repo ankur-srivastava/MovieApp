@@ -11,6 +11,7 @@ import java.util.ArrayList;
  */
 public class Movie implements Parcelable{
 
+    int id;
     long movieId;
     String title;
     String overview;
@@ -141,5 +142,13 @@ public class Movie implements Parcelable{
 
     public void setFavorite(String favorite) {
         this.favorite = favorite;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
