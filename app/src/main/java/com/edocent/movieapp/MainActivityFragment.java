@@ -3,8 +3,10 @@ package com.edocent.movieapp;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -15,8 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.GridView;
+import android.widget.SimpleCursorAdapter;
 
+import com.edocent.movieapp.adapters.FavoriteMovieAdapter;
 import com.edocent.movieapp.adapters.MovieAdapter;
 import com.edocent.movieapp.database.MovieDBHelper;
 import com.edocent.movieapp.model.Movie;
@@ -237,7 +242,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     public void setCursorAdapter(){
-        new MovieDBHelper.FavoriteMovies().execute(getActivity(), moviesListView);
+        MovieDBHelper helper = new MovieDBHelper(getActivity());
+
+        /*
+        SimpleCursorAdapter simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1,
+                MovieDBHelper.getFavoriteMoviesCursor(helper), new String[]{AppConstants.MOVIE_TITLE},
+                new int[]{android.R.id.text1}, 0);
+        */
+
+        CursorAdapter ca = new FavoriteMovieAdapter(getActivity(), MovieDBHelper.getFavoriteMoviesCursor(helper), 0);
+
+        moviesListView.setAdapter(ca);
     }
 
     @Override

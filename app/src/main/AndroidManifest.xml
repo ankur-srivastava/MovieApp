@@ -11,13 +11,13 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label=""
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/main_activity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:label=""
+            android:theme="@style/AppTheme"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name=".DetailActivity"
-            android:label="@string/detail_activity"
+            android:label=""
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme" >
             <meta-data

@@ -43,25 +43,32 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.v(TAG, "on upgrade called");
         if(oldVersion < AppConstants.DB_VERSION){
+            Log.v(TAG, "Going to add new table Movie");
             //Add Movie table
-            db.execSQL("CREATE TABLE MOVIE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "MOVIEID INTEGER"
-                    + "TITLE TEXT"
-                    + "OVERVIEW TEXT"
-                    + "RELEASEDATE TEXT"
-                    + "POSTERPATH TEXT"
-                    + "COUNT TEXT"
-                    + "LENGTH TEXT"
-                    + "AVERAGE TEXT"
-                    + "FAVORITE TEXT"
-                    + ")");
+            try{
+                String query = "CREATE TABLE MOVIE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + "MOVIEID INTEGER,"
+                        +  AppConstants.MOVIE_TITLE+" TEXT,"
+                        + "OVERVIEW TEXT,"
+                        + "RELEASEDATE TEXT,"
+                        + "POSTERPATH TEXT,"
+                        + "COUNT TEXT,"
+                        + "LENGTH TEXT,"
+                        + "AVERAGE TEXT,"
+                        + "FAVORITE TEXT"
+                        + ")";
+                Log.v(TAG, "Query "+query);
+                db.execSQL(query);
+
+            }catch (Exception e){
+                Log.e(TAG, e.getMessage());
+            }
         }
     }
 
     public static class FavoriteMovies extends AsyncTask<Object, Void, SimpleCursorAdapter>{
-
-        private ProgressDialog dialog;
 
         @Override
         protected void onPreExecute(){
@@ -73,15 +80,11 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
             SQLiteOpenHelper tempDBHelper = (SQLiteOpenHelper) params[0];
 
-            context = (Context)params[0];
-            moviesListView = (GridView) params[1];
-
-            dialog=new ProgressDialog(context);
-            dialog.setMessage("Getting your Favorite Movies !!");
-            dialog.show();
+            context = (Context)params[1];
+            moviesListView = (GridView) params[2];
 
             SimpleCursorAdapter simpleCursorAdapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_1,
-                    getFavoriteMoviesCursor(tempDBHelper), new String[]{"POSTERPATH"}, new int[]{}, 0);
+                    getFavoriteMoviesCursor(tempDBHelper), new String[]{AppConstants.MOVIE_TITLE}, new int[]{android.R.id.text1}, 0);
             return simpleCursorAdapter;
         }
 
@@ -90,7 +93,6 @@ public class MovieDBHelper extends SQLiteOpenHelper {
             //Setup the cursor adapter using this list
             moviesListView.setAdapter(adapter);
             Log.v(TAG, "Adapter set");
-            dialog.dismiss();
         }
     }
 
@@ -116,8 +118,10 @@ public class MovieDBHelper extends SQLiteOpenHelper {
     }
 
     public static void updateMovie(SQLiteOpenHelper helper, Movie movie){
+        Log.v(TAG, "Going to update Movie");
         SQLiteDatabase db = helper.getWritableDatabase();
-        Movie movieFromDB = getMovie(helper, (int)movie.getMovieId());
+        Log.v(TAG, "Movie Id is "+movie.getMovieId());
+        Movie movieFromDB = getMovie(db, (int)movie.getMovieId());
         movieContentValues = new ContentValues();
         if(movieFromDB != null){
             if(movieFromDB.getFavorite() == null || movieFromDB.getFavorite().equals("") || movieFromDB.getFavorite().equals(AppConstants.NOT_FAVORITE_MOVIE)){
@@ -128,8 +132,9 @@ public class MovieDBHelper extends SQLiteOpenHelper {
             updateMovieRecord(db, movieContentValues, movieFromDB.getId());
         }else{
             //Add
+            Log.v(TAG, "Going to add movie "+movie);
             movieContentValues.put("MOVIEID", movie.getMovieId());
-            movieContentValues.put("TITLE", movie.getTitle());
+            movieContentValues.put(AppConstants.MOVIE_TITLE, movie.getTitle());
             movieContentValues.put("OVERVIEW", movie.getOverview());
             movieContentValues.put("RELEASEDATE", movie.getReleaseDate());
             movieContentValues.put("POSTERPATH", movie.getPosterPath());
@@ -146,9 +151,11 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         try{
             db.update("MOVIE", cv, "_id = ?", new String[]{Integer.toString(id)});
             Log.v(TAG, "Movie Updated");
+            /*
             if(context != null){
                 Toast.makeText(context, "Your selection has been updated", Toast.LENGTH_SHORT).show();
             }
+            */
             return true;
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
@@ -161,9 +168,11 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         try{
             db.insert("MOVIE", null, cv);
             Log.v(TAG, "Movie Added");
+            /*
             if(context != null){
                 Toast.makeText(context, "Movie added to Favorites", Toast.LENGTH_SHORT).show();
             }
+            */
             return true;
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
@@ -171,14 +180,13 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static Movie getMovie(SQLiteOpenHelper helper, int movieId){
+    public static Movie getMovie(SQLiteDatabase db, int movieId){
         Movie movie = null;
-        SQLiteDatabase db = helper.getReadableDatabase();
+        //SQLiteDatabase db = helper.getReadableDatabase();
         try {
 
-
             if (db != null) {
-                Cursor c = db.query("MOVIE", new String[]{"_id", "TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH", "AVERAGE", "FAVORITE"},
+                Cursor c = db.query("MOVIE", new String[]{"_id", AppConstants.MOVIE_TITLE, "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH", "AVERAGE", "FAVORITE"},
                         "MOVIEID=?",
                         new String[]{Integer.toString(movieId)},
                         null, null, null);
@@ -199,8 +207,6 @@ public class MovieDBHelper extends SQLiteOpenHelper {
             }
         }catch(SQLiteException ex){
             Log.e(TAG, ex.getMessage());
-        }finally{
-            db.close();
         }
         return movie;
     }
@@ -211,7 +217,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         try {
             if (db != null) {
                 Cursor c = db.query("MOVIE",
-                            new String[]{"_id", "TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
+                            new String[]{"_id", AppConstants.MOVIE_TITLE, "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
                                     "AVERAGE", "FAVORITE"},
                         null,null,null, null, null);
 
@@ -250,13 +256,11 @@ public class MovieDBHelper extends SQLiteOpenHelper {
                 tempCursor = db.query("MOVIE",
                         //new String[]{"_id", "TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
                                 //"AVERAGE", "FAVORITE"},
-                        new String[]{"_id", "POSTERPATH"},
+                        new String[]{"_id",AppConstants.MOVIE_TITLE,"POSTERPATH"},
                         null,null,null, null, null);
             }
         }catch(SQLiteException ex){
             Log.e(TAG, ex.getMessage());
-        }finally{
-            db.close();
         }
         return tempCursor;
     }

@@ -28,4 +28,7 @@ public class AppConstants {
     public static final int DB_VERSION=1;
     public static final String FAVORITE_MOVIE="Y";
     public static final String NOT_FAVORITE_MOVIE="N";
+
+    //DB Constants
+    public static final String MOVIE_TITLE="MOVIETITLE";
 }
