@@ -106,7 +106,9 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
             if(movieDetailObject == null) {
                 if (getActivity().getIntent() != null) {
+                    Log.v(TAG, "Get movieDetailObject");
                     movieDetailObject = (Movie) getActivity().getIntent().getExtras().get(AppConstants.DETAIL_MOVIE_OBJECT);
+                    Log.v(TAG, "Got movieDetailObject MovieId is "+movieDetailObject.getMovieId()+" and id is "+movieDetailObject.getId());
                 }
             }
         }else{
@@ -121,6 +123,7 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
                     //Check with the Database - if a row exists for this movie then update the flag
                     Log.v(TAG, "Fav Icon clicked");
                     MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
+                    Log.v(TAG, "Movie id is "+movieDetailObject.getId()+" and movie id is "+movieDetailObject.getMovieId());
                     new MovieDBHelper.UpdateMovieAsync().execute(movieDBHelper, movieDetailObject, getActivity());
                 }
             });
