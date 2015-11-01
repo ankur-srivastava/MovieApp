@@ -120,20 +120,25 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             service.execute(AppConstants.POPULARITY);
         }
     }
-
+    /*In this method position parameter denotes position of item in list and id denotes the primary key*/
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //Check for small and large device
-
         View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
-
         Movie detailMovieObj = null;
+
         if(allMoviesList != null && allMoviesList.get(position) != null){
             detailMovieObj = allMoviesList.get(position);
         }
-        Log.v(TAG, "Check Section 2");
+
+        /*If the user clicks a favorite movie*/
+        if(detailMovieObj == null){
+            int _id = (int)id;
+            Log.v(TAG, "Movie ID is "+_id);
+            MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
+            detailMovieObj = MovieDBHelper.getMovieUsingId(movieDBHelper, _id);
+        }
+
         if(largeSectionTwoFragment != null){
-            Log.v(TAG, "Section 2 fragment available");
             loadDetailFragment(detailMovieObj);
         }else{
             Intent intent = new Intent(getActivity(), DetailActivity.class);
