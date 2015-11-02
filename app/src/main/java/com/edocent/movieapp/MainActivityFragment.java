@@ -3,10 +3,8 @@ package com.edocent.movieapp;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -19,7 +17,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
-import android.widget.SimpleCursorAdapter;
 
 import com.edocent.movieapp.adapters.FavoriteMovieAdapter;
 import com.edocent.movieapp.adapters.MovieAdapter;
@@ -64,6 +61,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+
         moviesListView = (GridView)view.findViewById(R.id.moviesListViewId);
         moviesListView.setOnItemClickListener(this);
         moviesListView.setOnScrollListener(this);
@@ -93,7 +91,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onPause(){
         super.onPause();
-        Log.v(TAG, "---- reset data ----");
+        Log.v(TAG, "Reset Data");
         moviesListFromJSON = null;
         allMoviesList = null;
         adapter = null;
@@ -104,15 +102,12 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public String getSortOrderPref(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortOrderPref = sharedPreferences.getString(getString(R.string.pref_rating_sort), "1");
-        //Log.v(TAG, "Got the following preference "+sortOrderPref);
         return sortOrderPref;
     }
 
     public void getMovieList(){
         MovieService service = new MovieService();
         if(getSortOrderPref().equals("3")) {
-            //3 is for the Favorite option
-            Log.v(TAG, "Fetch and set the Favorites");
             setCursorAdapter();
         }else if(getSortOrderPref().equals("2")) {
             service.execute(AppConstants.RATING);
@@ -133,18 +128,15 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         /*If the user clicks a favorite movie*/
         if(detailMovieObj == null){
             int _id = (int)id;
-            Log.v(TAG, "Movie ID is "+_id);
             MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
             detailMovieObj = MovieDBHelper.getMovieUsingId(movieDBHelper, _id);
         }
-        Log.v(TAG, "Check Movie "+detailMovieObj);
+
         if(largeSectionTwoFragment != null){
             loadDetailFragment(detailMovieObj);
         }else{
-            Log.v(TAG, "Start Detail Activity and flag is "+detailMovieObj.getFavorite());
             Intent intent = new Intent(getActivity(), DetailActivity.class);
             intent.putExtra(AppConstants.DETAIL_MOVIE_OBJECT, detailMovieObj);
-
             startActivity(intent);
         }
     }
@@ -162,9 +154,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
+    public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -174,8 +164,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
-
-    /*Add an Async Task class*/
     public class MovieService extends AsyncTask<String, Void, String>{
 
         private ProgressDialog dialog =
@@ -248,17 +236,16 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     public void setCursorAdapter(){
+        ProgressDialog tempDialog =
+                new ProgressDialog(getActivity());
+        tempDialog.setMessage("Getting your Favorites");
+        tempDialog.show();
+
         MovieDBHelper helper = new MovieDBHelper(getActivity());
-
-        /*
-        SimpleCursorAdapter simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1,
-                MovieDBHelper.getFavoriteMoviesCursor(helper), new String[]{AppConstants.MOVIE_TITLE},
-                new int[]{android.R.id.text1}, 0);
-        */
-
         CursorAdapter ca = new FavoriteMovieAdapter(getActivity(), MovieDBHelper.getFavoriteMoviesCursor(helper), 0);
-
         moviesListView.setAdapter(ca);
+
+        tempDialog.dismiss();
     }
 
     @Override
@@ -276,7 +263,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public String getMovieJSONString(String sortBy){
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-
         String movieJsonStr = null;
 
         try {
@@ -325,7 +311,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 }
             }
         }
-
         return movieJsonStr;
     }
 
