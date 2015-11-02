@@ -141,7 +141,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         if(largeSectionTwoFragment != null){
             loadDetailFragment(detailMovieObj);
         }else{
-            Log.v(TAG, "Start Detail Activity");
+            Log.v(TAG, "Start Detail Activity and flag is "+detailMovieObj.getFavorite());
             Intent intent = new Intent(getActivity(), DetailActivity.class);
             intent.putExtra(AppConstants.DETAIL_MOVIE_OBJECT, detailMovieObj);
 

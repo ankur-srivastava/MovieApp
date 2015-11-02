@@ -106,9 +106,7 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         if(savedInstanceState == null || !savedInstanceState.containsKey(AppConstants.MOVIE_LIST_FROM_BUNDLE_KEY)){
             if(movieDetailObject == null) {
                 if (getActivity().getIntent() != null) {
-                    Log.v(TAG, "Get movieDetailObject");
                     movieDetailObject = (Movie) getActivity().getIntent().getExtras().get(AppConstants.DETAIL_MOVIE_OBJECT);
-                    Log.v(TAG, "Got movieDetailObject MovieId is "+movieDetailObject.getMovieId()+" and id is "+movieDetailObject.getId());
                 }
             }
         }else{
@@ -116,6 +114,12 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         }
 
         if(movieDetailObject != null){
+            if(movieDetailObject.getFavorite() == null || movieDetailObject.getFavorite().equals("") || movieDetailObject.getFavorite().equals(AppConstants.NOT_FAVORITE_MOVIE)){
+                //favoriteIconId.setImageResource(R.drawable.abc_btn_rating_star_off_mtrl_alpha);
+                favoriteIconId.setImageResource(android.R.drawable.star_big_off);
+            }else{
+                favoriteIconId.setImageResource(android.R.drawable.star_big_on);
+            }
 
             favoriteIconId.setOnClickListener(new View.OnClickListener() {
                 @Override
