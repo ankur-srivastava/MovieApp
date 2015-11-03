@@ -122,15 +122,19 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
         Movie detailMovieObj = null;
 
-        if(allMoviesList != null && allMoviesList.get(position) != null){
-            detailMovieObj = allMoviesList.get(position);
-        }
-
         /*If the user clicks a favorite movie*/
-        if(detailMovieObj == null){
-            int _id = (int)id;
+        //if(detailMovieObj == null){
+        if(id > 0) {
+            int _id = (int) id;
             MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
             detailMovieObj = MovieDBHelper.getMovieUsingId(movieDBHelper, _id);
+        }
+        //}
+
+        if(detailMovieObj == null){
+            if(allMoviesList != null && allMoviesList.get(position) != null){
+                detailMovieObj = allMoviesList.get(position);
+            }
         }
 
         if(largeSectionTwoFragment != null){
