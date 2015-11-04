@@ -122,19 +122,24 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
         Movie detailMovieObj = null;
 
+        if(allMoviesList != null && allMoviesList.get(position) != null){
+            detailMovieObj = allMoviesList.get(position);
+            if(detailMovieObj != null && detailMovieObj.getMovieId() != 0){
+                //get detail object from db based on movieid
+                MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
+                Movie tempMovie = MovieDBHelper.getMovie(movieDBHelper.getReadableDatabase(), (int)detailMovieObj.getMovieId());
+                if(tempMovie != null){
+                    Log.v(TAG, "Got movie from DB... ");
+                    detailMovieObj = tempMovie;
+                }
+            }
+        }
+
         /*If the user clicks a favorite movie*/
-        //if(detailMovieObj == null){
-        if(id > 0) {
-            int _id = (int) id;
+        if(detailMovieObj == null){
+            int _id = (int)id;
             MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
             detailMovieObj = MovieDBHelper.getMovieUsingId(movieDBHelper, _id);
-        }
-        //}
-
-        if(detailMovieObj == null){
-            if(allMoviesList != null && allMoviesList.get(position) != null){
-                detailMovieObj = allMoviesList.get(position);
-            }
         }
 
         if(largeSectionTwoFragment != null){
@@ -240,6 +245,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     public void setCursorAdapter(){
+        Log.v(TAG, "Trying to start cursor !!");
         ProgressDialog tempDialog =
                 new ProgressDialog(getActivity());
         tempDialog.setMessage("Getting your Favorites !!");
