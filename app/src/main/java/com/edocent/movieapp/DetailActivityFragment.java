@@ -129,6 +129,8 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
                     MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
                     Log.v(TAG, "Movie id is "+movieDetailObject.getId()+" and movie id is "+movieDetailObject.getMovieId());
                     new MovieDBHelper.UpdateMovieAsync().execute(movieDBHelper, movieDetailObject, getActivity());
+
+                    Toast.makeText(getActivity(), "Your choice has been updated !!", Toast.LENGTH_SHORT).show();
                 }
             });
 
