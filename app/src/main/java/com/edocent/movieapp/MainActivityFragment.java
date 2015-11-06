@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -19,28 +18,19 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
-
 import com.edocent.movieapp.adapters.FavoriteMovieAdapter;
 import com.edocent.movieapp.adapters.MovieAdapter;
 import com.edocent.movieapp.database.MovieDBHelper;
 import com.edocent.movieapp.model.Movie;
 import com.edocent.movieapp.utilities.AppConstants;
 import com.edocent.movieapp.utilities.AppUtility;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * A placeholder fragment containing a simple view.
+ * @author Ankur
  */
 public class MainActivityFragment extends Fragment implements AdapterView.OnItemClickListener, AbsListView.OnScrollListener {
 
@@ -56,9 +46,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     Bundle tempBundle;
 
-    public MainActivityFragment() {
-
-    }
+    public MainActivityFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,7 +74,9 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             if(allMoviesList == null){
                 allMoviesList = new ArrayList<>();
             }
-            allMoviesList.addAll(moviesListFromJSON);
+            if(moviesListFromJSON != null){
+                allMoviesList.addAll(moviesListFromJSON);
+            }
             setAdapter();
         }
     }
@@ -104,8 +94,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     public String getSortOrderPref(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortOrderPref = sharedPreferences.getString(getString(R.string.pref_rating_sort), "1");
-        return sortOrderPref;
+        return sharedPreferences.getString(getString(R.string.pref_rating_sort), "1");
     }
 
     public void getMovieList(){
@@ -118,7 +107,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             service.execute(AppConstants.POPULARITY);
         }
     }
-    /*In this method position parameter denotes position of item in list and id denotes the primary key*/
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
@@ -127,17 +116,14 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         if(allMoviesList != null && allMoviesList.get(position) != null){
             detailMovieObj = allMoviesList.get(position);
             if(detailMovieObj != null && detailMovieObj.getMovieId() != 0){
-                //get detail object from db based on movieid
                 MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
                 Movie tempMovie = MovieDBHelper.getMovie(movieDBHelper.getReadableDatabase(), (int)detailMovieObj.getMovieId());
                 if(tempMovie != null){
-                    Log.v(TAG, "Got movie from DB... ");
                     detailMovieObj = tempMovie;
                 }
             }
         }
 
-        /*If the user clicks a favorite movie*/
         if(detailMovieObj == null){
             int _id = (int)id;
             MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
@@ -154,7 +140,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     private void loadDetailFragment(Movie movieObject) {
-        //We have two fragments
         DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
         detailActivityFragment.setMovieDetailObject(movieObject);
 
@@ -185,32 +170,29 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             super.onPreExecute();
             dialog.setMessage("We are almost done !!");
             dialog.show();
+            //Cancel Task will be called if processing takes > X seconds
             cancelTask(dialog);
         }
 
         @Override
         protected String doInBackground(String... params) {
             refreshEnabled = false;
-            //Log.v(TAG, "In doInBackground with param "+params[0]);
             return AppUtility.getMovieJSONString(params[0], pageNo);
         }
 
         @Override
         protected void onPostExecute(String result){
-            /*Populate the Movie object with the data from the service call*/
-            JSONObject jsonObject = null;
+            JSONObject jsonObject;
             JSONArray jsonArray = null;
-            //Log.v(TAG, "Got the following result "+result);
+
             try {
                 jsonObject = new JSONObject(result);
-                if(jsonObject != null){
-                    jsonArray = jsonObject.getJSONArray("results");
-                }
+                jsonArray = jsonObject.getJSONArray("results");
             } catch (JSONException e) {
                 Log.e(TAG, "Error "+e.getMessage());
             }
             if(jsonArray != null){
-                moviesListFromJSON = new ArrayList<Movie>();
+                moviesListFromJSON = new ArrayList<>();
                 for(int i=0;i<jsonArray.length();i++){
                     try {
                         JSONObject tempObject = jsonArray.getJSONObject(i);
@@ -224,7 +206,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 }
             }
             if(moviesListFromJSON != null) {
-                //Log.v(TAG, "moviesListFromJSON size is " + moviesListFromJSON.size());
                 setAdapter();
                 pageNo++;
                 if(allMoviesList == null){
@@ -272,7 +253,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     public void setCursorAdapter(){
-        Log.v(TAG, "Trying to start cursor !!");
+        //Log.v(TAG, "Trying to start cursor !!");
         ProgressDialog tempDialog =
                 new ProgressDialog(getActivity());
         tempDialog.setMessage("Getting your Favorites !!");

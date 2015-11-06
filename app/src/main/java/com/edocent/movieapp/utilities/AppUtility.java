@@ -6,12 +6,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
-
 import com.edocent.movieapp.model.Movie;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,14 +17,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by SRIVASTAVAA on 11/2/2015.
+ * Created by Ankur on 11/2/2015.
  */
 public class AppUtility {
 
     private static final String TAG = AppUtility.class.getSimpleName();
 
     public static String getYearFromJSON(String date){
-        String year = "";
+        String year;
         if(date != null && date.length() > 0 && date.indexOf("-") > 0) {
             year = date.substring(0, date.indexOf("-"));
         }else{
@@ -67,7 +64,7 @@ public class AppUtility {
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
 
             while ((line = reader.readLine()) != null) {
                 buffer.append(line + "\n");
@@ -78,7 +75,7 @@ public class AppUtility {
             }
             movieJsonStr = buffer.toString();
         } catch (IOException e) {
-            Log.e(TAG, "Error ", e);
+            Log.e(TAG, e.getMessage());
             return null;
         } finally{
             if (urlConnection != null) {
