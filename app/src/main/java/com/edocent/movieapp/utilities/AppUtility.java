@@ -1,7 +1,11 @@
 package com.edocent.movieapp.utilities;
 
+import android.app.ActionBar;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.edocent.movieapp.model.Movie;
 
@@ -113,5 +117,15 @@ public class AppUtility {
             Log.e(TAG, e.getMessage());
         }
         return tempMovie;
+    }
+
+    public static void setupBannerIcon(ActionBar actionBar, ImageView view){
+        view.setPadding(400, 0, 0, 0);
+        actionBar.setDisplayShowTitleEnabled(false);
+    }
+
+    public static boolean isOnline(ConnectivityManager connMgr) {
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 }
