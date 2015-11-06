@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.edocent.movieapp.adapters.FavoriteMovieAdapter;
 import com.edocent.movieapp.adapters.MovieAdapter;
@@ -183,6 +185,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             super.onPreExecute();
             dialog.setMessage("We are almost done !!");
             dialog.show();
+            cancelTask(dialog);
         }
 
         @Override
@@ -231,6 +234,30 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             }
             dialog.dismiss();
             refreshEnabled = true;
+        }
+
+        void cancelTask(final ProgressDialog pd) {
+            //Define a thread to cancel Progress Bar after Xsec
+            Runnable progressThread = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Log.v(TAG, "Task Status is "+getStatus());
+                        if(getStatus() != Status.FINISHED){
+                            pd.dismiss();
+                            if (getActivity() != null) {
+                                Toast.makeText(getActivity(), "Weak Internet Connection", Toast.LENGTH_SHORT).show();
+                            }
+                            cancel(true);
+                        }
+                    }catch (Exception e){
+                        Log.e(TAG, "Check error "+e.getMessage());
+                    }
+                }
+            };
+
+            Handler progressHandler = new Handler();
+            progressHandler.postDelayed(progressThread, AppConstants.PROGRESS_DIALOG_TIME);
         }
     }
 

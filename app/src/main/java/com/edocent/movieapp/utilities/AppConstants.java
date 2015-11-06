@@ -31,4 +31,5 @@ public class AppConstants {
 
     //DB Constants
     public static final String MOVIE_TITLE="MOVIETITLE";
+    public static final int PROGRESS_DIALOG_TIME=8000;
 }
