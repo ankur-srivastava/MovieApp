@@ -68,9 +68,11 @@ public class MainActivity extends Activity implements MainActivityFragment.Movie
     }
 
     private void loadDetailFragment(){
-        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
+        //DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
+        NoMovieFragment noMovieFragment = new NoMovieFragment();
+
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.sectionTwoFragmentId, detailActivityFragment);
+        fragmentTransaction.replace(R.id.sectionTwoFragmentId, noMovieFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
     }

@@ -43,10 +43,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.v(TAG, "on upgrade called");
         if(oldVersion < AppConstants.DB_VERSION){
-            Log.v(TAG, "Going to add new table Movie");
-            //Add Movie table
             try{
                 String query = "CREATE TABLE MOVIE (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                         + "MOVIEID INTEGER,"
@@ -104,7 +101,6 @@ public class MovieDBHelper extends SQLiteOpenHelper {
             Movie movie = (Movie) params[1];
             context = (Context) params[2];
             if(tempDBHelper != null && movie != null){
-                Log.v(TAG, "Going to update movie "+movie);
                 updateMovie(tempDBHelper, movie);
             }
             return null;
@@ -114,16 +110,8 @@ public class MovieDBHelper extends SQLiteOpenHelper {
     public static void updateMovie(SQLiteOpenHelper helper, Movie movie){
         SQLiteDatabase db = helper.getWritableDatabase();
         Movie movieFromDB = getMovie(db, (int)movie.getMovieId());
-        Log.v(TAG, "Movie from DB is "+movieFromDB);
         movieContentValues = new ContentValues();
         if(movieFromDB != null){
-            /*
-            if(movieFromDB.getFavorite() == null || movieFromDB.getFavorite().equals("") || movieFromDB.getFavorite().equals(AppConstants.NOT_FAVORITE_MOVIE)){
-                movieContentValues.put("FAVORITE", AppConstants.FAVORITE_MOVIE);
-            }else{
-                movieContentValues.put("FAVORITE", AppConstants.NOT_FAVORITE_MOVIE);
-            }
-            */
             if(movieFromDB.getFavorite() == null || movieFromDB.getFavorite().equals("") || movieFromDB.getFavorite().equals(AppConstants.NOT_FAVORITE_MOVIE)){
                 movieContentValues.put("FAVORITE", AppConstants.FAVORITE_MOVIE);
                 updateMovieRecord(db, movieContentValues, movieFromDB.getId());
@@ -150,11 +138,6 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         try{
             db.update("MOVIE", cv, "_id = ?", new String[]{Integer.toString(id)});
             Log.v(TAG, "Movie Updated");
-            /*
-            if(context != null){
-                Toast.makeText(context, "Your selection has been updated", Toast.LENGTH_SHORT).show();
-            }
-            */
             return true;
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
@@ -166,12 +149,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         Log.v(TAG, "Ready to delete");
         try{
             int numRowsDeleted = db.delete("MOVIE", "_id = ?", new String[]{Integer.toString(id)});
-            Log.v(TAG, "Movie Deleted "+numRowsDeleted);
-            /*
-            if(context != null){
-                Toast.makeText(context, "Your selection has been updated", Toast.LENGTH_SHORT).show();
-            }
-            */
+            Log.v(TAG, "Movie Deleted " + numRowsDeleted);
             return true;
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
@@ -180,16 +158,8 @@ public class MovieDBHelper extends SQLiteOpenHelper {
     }
 
     public static boolean addMovie(SQLiteDatabase db, ContentValues cv){
-        Log.v(TAG, "Ready to Add");
-        long _id;
         try{
-            _id = db.insert("MOVIE", null, cv);
-            Log.v(TAG, "Movie Added with ID "+_id);
-            /*
-            if(context != null){
-                Toast.makeText(context, "Movie added to Favorites", Toast.LENGTH_SHORT).show();
-            }
-            */
+            db.insert("MOVIE", null, cv);
             return true;
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
@@ -199,7 +169,6 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
     public static Movie getMovie(SQLiteDatabase db, int movieId){
         Movie movie = null;
-        //SQLiteDatabase db = helper.getReadableDatabase();
         try {
 
             if (db != null) {
@@ -229,54 +198,12 @@ public class MovieDBHelper extends SQLiteOpenHelper {
         return movie;
     }
 
-    public static ArrayList<Movie> getFavoriteMovies(SQLiteOpenHelper helper){
-        ArrayList<Movie> movieList = null;
-        SQLiteDatabase db = helper.getReadableDatabase();
-        try {
-            if (db != null) {
-                Cursor c = db.query("MOVIE",
-                            new String[]{"_id", AppConstants.MOVIE_TITLE, "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
-                                    "AVERAGE", "FAVORITE"},
-                        null,null,null, null, null);
-
-                movieList = new ArrayList<>();
-
-                if(c.getCount() > 0){
-                    while(c.moveToNext()){
-                        Movie movie = new Movie();
-                        movie.setId(c.getInt(0));
-                        movie.setTitle(c.getString(1));
-                        movie.setOverview(c.getString(2));
-                        movie.setReleaseDate(c.getString(3));
-                        movie.setPosterPath(c.getString(4));
-                        movie.setVoteCount(c.getString(5));
-                        movie.setMovieLength(c.getString(6));
-                        movie.setVoteAverage(c.getString(7));
-                        movie.setFavorite(c.getString(8));
-                        movieList.add(movie);
-                    }
-                }
-
-                c.close();
-            }
-        }catch(SQLiteException ex){
-            Log.e(TAG, ex.getMessage());
-        }finally{
-            db.close();
-        }
-        return movieList;
-    }
-
     public static Cursor getFavoriteMoviesCursor(SQLiteOpenHelper helper){
         SQLiteDatabase db = helper.getReadableDatabase();
         try {
             if (db != null) {
                 tempCursor = db.query("MOVIE",
-                        //new String[]{"_id", "TITLE", "OVERVIEW", "RELEASEDATE", "POSTERPATH", "COUNT", "LENGTH",
-                                //"AVERAGE", "FAVORITE"},
                         new String[]{"_id",AppConstants.MOVIE_TITLE,"POSTERPATH"},
-                        //"FAVORITE=?",
-                        //new String[]{AppConstants.FAVORITE_MOVIE},
                         null, null,
                         null,null,null);
             }

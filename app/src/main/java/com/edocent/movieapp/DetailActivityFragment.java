@@ -97,8 +97,6 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
         viewReviewsId.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Call Review Fragment
-                Log.v(TAG, "Reviews clicked ..");
                 mReviewScreen.displayReviews(movieDetailObject.getMovieId());
             }
         });
@@ -125,9 +123,7 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
                 @Override
                 public void onClick(View v) {
                     //Check with the Database - if a row exists for this movie then update the flag
-                    Log.v(TAG, "Fav Icon clicked");
                     MovieDBHelper movieDBHelper = new MovieDBHelper(getActivity());
-                    Log.v(TAG, "Movie id is "+movieDetailObject.getId()+" and movie id is "+movieDetailObject.getMovieId());
                     new MovieDBHelper.UpdateMovieAsync().execute(movieDBHelper, movieDetailObject, getActivity());
 
                     Toast.makeText(getActivity(), "Your choice has been updated !!", Toast.LENGTH_SHORT).show();
@@ -171,7 +167,6 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
             tempTrailer = trailers.get(position);
         }
         if(tempTrailer != null){
-            Log.v(TAG, "Following trailer was invoked " + tempTrailer.getTrailerName());
             //Invoke youtube
             String youtubeURL = AppConstants.MOVIE_YOUTUBE_URL+"/"+tempTrailer.getTrailerKey();
 
@@ -264,7 +259,6 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
                     }
                 }
                 if(trailers != null && trailers.size() > 0){
-                    Log.v(TAG, "Trailers List "+trailers.size());
                     movieDetailObject.setTrailersList(trailers);
                     mTrailerAdapter = new TrailerAdapter(getActivity(), R.layout.list_item_trailer, trailers);
                     trailerListView.setAdapter(mTrailerAdapter);
@@ -289,7 +283,6 @@ public class DetailActivityFragment extends Fragment implements AdapterView.OnIt
                     .appendQueryParameter(AppConstants.API_KEY, AppConstants.MOVIE_API_KEY)
                     .build();
 
-            Log.v(TAG, "Trailers URI - "+uri.toString());
             URL url = new URL(uri.toString());
 
             urlConnection = (HttpURLConnection) url.openConnection();

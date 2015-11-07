@@ -96,7 +96,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onPause(){
         super.onPause();
-        Log.v(TAG, "Reset Data");
         moviesListFromJSON = null;
         allMoviesList = null;
         adapter = null;
@@ -122,7 +121,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.v(TAG, "AppConstants.landscapeMode = "+AppConstants.landscapeMode);
         View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
         Movie detailMovieObj = null;
 
@@ -145,7 +143,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
         //if(largeSectionTwoFragment != null){
         if(AppConstants.landscapeMode){
-            Log.v(TAG, "In Landscape mode");
             if(mMovieDetailInterface != null) {
                 mMovieDetailInterface.loadMovieDetails(detailMovieObj);
             }
@@ -230,7 +227,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 @Override
                 public void run() {
                     try {
-                        Log.v(TAG, "Task Status is "+getStatus());
                         if(getStatus() != Status.FINISHED){
                             pd.dismiss();
                             if (getActivity() != null) {
