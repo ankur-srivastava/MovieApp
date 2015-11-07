@@ -1,5 +1,6 @@
 package com.edocent.movieapp;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -39,6 +40,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     ArrayList<Movie> moviesListFromJSON;
     ArrayList<Movie> allMoviesList;
     MovieAdapter adapter;
+    MovieDetailInterface mMovieDetailInterface;
 
     int pageNo = 1;
     int tempFirstVisibleItem;
@@ -47,6 +49,16 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     Bundle tempBundle;
 
     public MainActivityFragment() { }
+
+    static interface  MovieDetailInterface{
+        void loadMovieDetails(Movie movie);
+    }
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        mMovieDetailInterface = (MovieDetailInterface) activity;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -110,6 +122,7 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.v(TAG, "AppConstants.landscapeMode = "+AppConstants.landscapeMode);
         View largeSectionTwoFragment = view.findViewById(R.id.sectionTwoFragmentId);
         Movie detailMovieObj = null;
 
@@ -130,23 +143,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             detailMovieObj = MovieDBHelper.getMovieUsingId(movieDBHelper, _id);
         }
 
-        if(largeSectionTwoFragment != null){
-            loadDetailFragment(detailMovieObj);
+        //if(largeSectionTwoFragment != null){
+        if(AppConstants.landscapeMode){
+            Log.v(TAG, "In Landscape mode");
+            if(mMovieDetailInterface != null) {
+                mMovieDetailInterface.loadMovieDetails(detailMovieObj);
+            }
         }else{
             Intent intent = new Intent(getActivity(), DetailActivity.class);
             intent.putExtra(AppConstants.DETAIL_MOVIE_OBJECT, detailMovieObj);
             startActivity(intent);
         }
-    }
-
-    private void loadDetailFragment(Movie movieObject) {
-        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
-        detailActivityFragment.setMovieDetailObject(movieObject);
-
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.sectionTwoFragmentId, detailActivityFragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fragmentTransaction.commit();
     }
 
     @Override
