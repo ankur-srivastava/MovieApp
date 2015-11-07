@@ -13,15 +13,15 @@ Below are some screenshots from the Current App
 
 App Icon
 
-![Alt text](https://cloud.githubusercontent.com/assets/402744/10694709/4e3de930-79bd-11e5-9785-62f94a7700a4.png "Movie List")
+![Alt text](https://cloud.githubusercontent.com/assets/402744/10990962/d92df780-847e-11e5-8f36-9c0311abdaeb.png "Movie List")
 
 Movie List - Keep Scrolling
 
-![Alt text](https://cloud.githubusercontent.com/assets/402744/10687237/2c5e714c-7989-11e5-8a3c-e1d8c87626ec.png "Movie List")
+![Alt text](https://cloud.githubusercontent.com/assets/402744/10990963/d92e19f4-847e-11e5-9b11-5cbb03cc5ea1.png "Movie List")
 
 Details
 
-![Alt text](https://cloud.githubusercontent.com/assets/402744/10687236/2c5c084e-7989-11e5-9bcf-49298482e3cd.png "Movie Detail")
+![Alt text](https://cloud.githubusercontent.com/assets/402744/10990964/d9300cfa-847e-11e5-8f91-83da58947da1.png "Movie Detail")
 
 Setting
 
